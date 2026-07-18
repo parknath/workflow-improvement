@@ -1,0 +1,453 @@
+{
+  "version": "0.1",
+  "generatedAt": "2026-07-18T10:54:36.126Z",
+  "metadata": {
+    "workflowName": "Plan an academic week",
+    "userRole": "University student",
+    "objective": "Create a realistic plan for classes, assignments, study, and project work",
+    "frequency": "Weekly"
+  },
+  "summary": "Plan an academic week is slowed mainly by search the lms and email for deadlines, rewrite assignments into a task list, build the weekly calendar. The redesign adds repeatable structure while preserving human judgment.",
+  "baseline": {
+    "estimatedTimeMinutes": 100,
+    "numberOfSteps": 4,
+    "majorBottlenecks": 3
+  },
+  "diagnosis": [
+    {
+      "id": "s1",
+      "order": 1,
+      "description": "Search the LMS and email for deadlines",
+      "tool": "LMS and Email",
+      "inputs": [
+        "Course pages",
+        "Messages"
+      ],
+      "output": "Deadline list",
+      "estimatedMinutes": 30,
+      "painPoints": [
+        "Information is scattered and deadlines get missed"
+      ],
+      "decisionsRequired": [],
+      "repeated": true,
+      "humanReviewMandatory": false,
+      "classification": "STANDARDIZE",
+      "scores": {
+        "repetition": 5,
+        "timeCost": 4,
+        "cognitiveLoad": 3,
+        "errorRisk": 3,
+        "automationSuitability": 4,
+        "humanJudgment": 1
+      },
+      "opportunityScore": 14.5,
+      "recommendation": "Use the same location, naming rule, and sequence every time."
+    },
+    {
+      "id": "s2",
+      "order": 2,
+      "description": "Rewrite assignments into a task list",
+      "tool": "Notes",
+      "inputs": [
+        "Deadline list"
+      ],
+      "output": "Task list",
+      "estimatedMinutes": 20,
+      "painPoints": [
+        "Large assignments stay vague"
+      ],
+      "decisionsRequired": [],
+      "repeated": true,
+      "humanReviewMandatory": false,
+      "classification": "TEMPLATE",
+      "scores": {
+        "repetition": 5,
+        "timeCost": 2,
+        "cognitiveLoad": 3,
+        "errorRisk": 1,
+        "automationSuitability": 4,
+        "humanJudgment": 1
+      },
+      "opportunityScore": 13,
+      "recommendation": "Start from a reusable template instead of recreating the output."
+    },
+    {
+      "id": "s3",
+      "order": 3,
+      "description": "Estimate effort and prioritize work",
+      "tool": "Notes",
+      "inputs": [
+        "Task list"
+      ],
+      "output": "Prioritized work",
+      "estimatedMinutes": 25,
+      "painPoints": [
+        "Time estimates are optimistic"
+      ],
+      "decisionsRequired": [
+        "Academic priorities",
+        "Available energy"
+      ],
+      "repeated": true,
+      "humanReviewMandatory": true,
+      "classification": "HUMAN_ONLY",
+      "scores": {
+        "repetition": 5,
+        "timeCost": 3,
+        "cognitiveLoad": 5,
+        "errorRisk": 3,
+        "automationSuitability": 1,
+        "humanJudgment": 5
+      },
+      "opportunityScore": 9.5,
+      "recommendation": "Keep the decision with the user and provide a review checklist."
+    },
+    {
+      "id": "s4",
+      "order": 4,
+      "description": "Build the weekly calendar",
+      "tool": "Calendar",
+      "inputs": [
+        "Prioritized work",
+        "Fixed commitments"
+      ],
+      "output": "Weekly schedule",
+      "estimatedMinutes": 25,
+      "painPoints": [
+        "Plans leave no recovery time"
+      ],
+      "decisionsRequired": [
+        "Personal capacity"
+      ],
+      "repeated": true,
+      "humanReviewMandatory": true,
+      "classification": "HUMAN_ONLY",
+      "scores": {
+        "repetition": 5,
+        "timeCost": 3,
+        "cognitiveLoad": 4,
+        "errorRisk": 2,
+        "automationSuitability": 2,
+        "humanJudgment": 5
+      },
+      "opportunityScore": 9.8,
+      "recommendation": "Keep the decision with the user and provide a review checklist."
+    }
+  ],
+  "priorityImprovements": [
+    {
+      "id": "s1",
+      "order": 1,
+      "description": "Search the LMS and email for deadlines",
+      "tool": "LMS and Email",
+      "inputs": [
+        "Course pages",
+        "Messages"
+      ],
+      "output": "Deadline list",
+      "estimatedMinutes": 30,
+      "painPoints": [
+        "Information is scattered and deadlines get missed"
+      ],
+      "decisionsRequired": [],
+      "repeated": true,
+      "humanReviewMandatory": false,
+      "classification": "STANDARDIZE",
+      "scores": {
+        "repetition": 5,
+        "timeCost": 4,
+        "cognitiveLoad": 3,
+        "errorRisk": 3,
+        "automationSuitability": 4,
+        "humanJudgment": 1
+      },
+      "opportunityScore": 14.5,
+      "recommendation": "Use the same location, naming rule, and sequence every time."
+    },
+    {
+      "id": "s2",
+      "order": 2,
+      "description": "Rewrite assignments into a task list",
+      "tool": "Notes",
+      "inputs": [
+        "Deadline list"
+      ],
+      "output": "Task list",
+      "estimatedMinutes": 20,
+      "painPoints": [
+        "Large assignments stay vague"
+      ],
+      "decisionsRequired": [],
+      "repeated": true,
+      "humanReviewMandatory": false,
+      "classification": "TEMPLATE",
+      "scores": {
+        "repetition": 5,
+        "timeCost": 2,
+        "cognitiveLoad": 3,
+        "errorRisk": 1,
+        "automationSuitability": 4,
+        "humanJudgment": 1
+      },
+      "opportunityScore": 13,
+      "recommendation": "Start from a reusable template instead of recreating the output."
+    },
+    {
+      "id": "s4",
+      "order": 4,
+      "description": "Build the weekly calendar",
+      "tool": "Calendar",
+      "inputs": [
+        "Prioritized work",
+        "Fixed commitments"
+      ],
+      "output": "Weekly schedule",
+      "estimatedMinutes": 25,
+      "painPoints": [
+        "Plans leave no recovery time"
+      ],
+      "decisionsRequired": [
+        "Personal capacity"
+      ],
+      "repeated": true,
+      "humanReviewMandatory": true,
+      "classification": "HUMAN_ONLY",
+      "scores": {
+        "repetition": 5,
+        "timeCost": 3,
+        "cognitiveLoad": 4,
+        "errorRisk": 2,
+        "automationSuitability": 2,
+        "humanJudgment": 5
+      },
+      "opportunityScore": 9.8,
+      "recommendation": "Keep the decision with the user and provide a review checklist."
+    }
+  ],
+  "improvedWorkflow": [
+    {
+      "title": "Collect classes, commitments, and deadlines",
+      "input": "Course pages, email, calendar, and unfinished work",
+      "action": "Review each approved source once and record every dated commitment in the weekly intake.",
+      "tool": "LMS, Email, and Calendar",
+      "output": "Complete weekly intake",
+      "aiInvolvement": "AI is not needed for collection; source links remain visible.",
+      "humanReview": "The student confirms dates against official course sources.",
+      "estimatedMinutes": 15,
+      "failureCondition": "Stop if a deadline is ambiguous and verify it with the instructor or syllabus.",
+      "classification": "STANDARDIZE",
+      "order": 1
+    },
+    {
+      "title": "Identify assignments",
+      "input": "Complete weekly intake",
+      "action": "Separate assessed work, preparation, administration, and personal commitments.",
+      "tool": "Notes",
+      "output": "Assignment and commitment list",
+      "aiInvolvement": "AI may group entries but cannot invent requirements.",
+      "humanReview": "Confirm every assignment against its official instructions.",
+      "estimatedMinutes": 5,
+      "failureCondition": "Stop if requirements or submission dates are missing.",
+      "classification": "SIMPLIFY",
+      "order": 2
+    },
+    {
+      "title": "Break large assignments into smaller tasks",
+      "input": "Assignment instructions and rubric",
+      "action": "Use the decomposition template to create actions that can be completed in one work block.",
+      "tool": "Notes",
+      "output": "Actionable task list",
+      "aiInvolvement": "AI may draft a decomposition from supplied instructions.",
+      "humanReview": "The student verifies that every rubric requirement is covered.",
+      "estimatedMinutes": 10,
+      "failureCondition": "Stop if the assignment instructions have not been provided.",
+      "classification": "AI_ASSIST",
+      "order": 3
+    },
+    {
+      "title": "Estimate effort",
+      "input": "Actionable task list and prior experience",
+      "action": "Assign a low, expected, and high estimate to each task.",
+      "tool": "Effort worksheet",
+      "output": "Ranged effort estimates",
+      "aiInvolvement": "AI may suggest a starting range; the student owns the estimate.",
+      "humanReview": "Adjust estimates for personal pace and current capacity.",
+      "estimatedMinutes": 8,
+      "failureCondition": "Stop if a task is still too vague to estimate.",
+      "classification": "HUMAN_ONLY",
+      "order": 4
+    },
+    {
+      "title": "Identify dependencies",
+      "input": "Actionable task list",
+      "action": "Mark tasks that require another task, person, resource, or fixed event first.",
+      "tool": "Notes",
+      "output": "Dependency-aware task list",
+      "aiInvolvement": "AI may flag language that suggests dependencies.",
+      "humanReview": "Confirm external dependencies and lead times.",
+      "estimatedMinutes": 5,
+      "failureCondition": "Stop if a prerequisite cannot be scheduled or obtained.",
+      "classification": "SIMPLIFY",
+      "order": 5
+    },
+    {
+      "title": "Prioritize work",
+      "input": "Deadlines, effort ranges, dependencies, and course priorities",
+      "action": "Rank tasks by deadline risk, importance, dependency impact, and effort.",
+      "tool": "Priority worksheet",
+      "output": "Prioritized task list",
+      "aiInvolvement": "AI may calculate a transparent first-pass order.",
+      "humanReview": "The student makes the final priority decisions.",
+      "estimatedMinutes": 8,
+      "failureCondition": "Stop if two priorities conflict and seek course guidance when needed.",
+      "classification": "HUMAN_ONLY",
+      "order": 6
+    },
+    {
+      "title": "Create a realistic weekly schedule",
+      "input": "Prioritized task list and fixed commitments",
+      "action": "Place focused blocks with buffers, breaks, and no more than the available weekly capacity.",
+      "tool": "Calendar",
+      "output": "Weekly schedule",
+      "aiInvolvement": "AI may propose a draft schedule without accessing private calendars.",
+      "humanReview": "The student checks energy, accessibility needs, and feasibility.",
+      "estimatedMinutes": 12,
+      "failureCondition": "Stop if planned work exceeds available capacity.",
+      "classification": "AI_ASSIST",
+      "order": 7
+    },
+    {
+      "title": "Create daily starting actions",
+      "input": "Weekly schedule",
+      "action": "Write one small, concrete starting action for each scheduled work block.",
+      "tool": "Notes or Calendar",
+      "output": "Daily kickoff list",
+      "aiInvolvement": "AI may rewrite vague tasks into concrete starting actions.",
+      "humanReview": "Confirm each action matches the actual assignment.",
+      "estimatedMinutes": 5,
+      "failureCondition": "Stop if an action cannot be started with available materials.",
+      "classification": "TEMPLATE",
+      "order": 8
+    },
+    {
+      "title": "Review unfinished work",
+      "input": "Completed week and task status",
+      "action": "Use the missed-task recovery process to reschedule, reduce, renegotiate, or remove unfinished work.",
+      "tool": "Notes",
+      "output": "Recovery decisions",
+      "aiInvolvement": "AI may present recovery options; it cannot make academic or health decisions.",
+      "humanReview": "The student chooses a realistic recovery action.",
+      "estimatedMinutes": 7,
+      "failureCondition": "Escalate to an instructor or support service when a deadline cannot be met.",
+      "classification": "HUMAN_ONLY",
+      "order": 9
+    },
+    {
+      "title": "Update the following week",
+      "input": "Recovery decisions and observed timing",
+      "action": "Carry forward only active work and update future effort estimates with actuals.",
+      "tool": "Weekly intake and Calendar",
+      "output": "Updated planning baseline",
+      "aiInvolvement": "AI may summarize timing differences from non-sensitive records.",
+      "humanReview": "Confirm that completed or obsolete work is not carried forward.",
+      "estimatedMinutes": 5,
+      "failureCondition": "Stop if the source of a carried-forward task is unclear.",
+      "classification": "STANDARDIZE",
+      "order": 10
+    }
+  ],
+  "assets": [
+    {
+      "name": "Weekly intake",
+      "kind": "template",
+      "content": "Week of:\nFixed commitments:\nOfficial deadlines with source links:\nUnfinished work:\nAvailable work blocks:"
+    },
+    {
+      "name": "Assignment decomposition",
+      "kind": "template",
+      "content": "Assignment:\nDefinition of done:\nRubric requirements:\nTasks (30–90 minutes each):\nDependencies:\nFirst visible action:"
+    },
+    {
+      "name": "Effort estimation",
+      "kind": "template",
+      "content": "Task | Low estimate | Expected estimate | High estimate | Actual | Learning for next estimate"
+    },
+    {
+      "name": "Priority framework",
+      "kind": "checklist",
+      "content": "- Deadline risk\n- Academic importance\n- Dependency impact\n- Estimated effort\n- Consequence of delay"
+    },
+    {
+      "name": "Weekly plan",
+      "kind": "template",
+      "content": "Day | Fixed commitments | Focus block | Buffer | Daily starting action"
+    },
+    {
+      "name": "Daily kickoff",
+      "kind": "checklist",
+      "content": "- Open the required source\n- Read the task definition\n- Start the named first action\n- Set the planned stop point\n- Record status before switching"
+    },
+    {
+      "name": "Missed-task recovery",
+      "kind": "checklist",
+      "content": "Choose one: reschedule with a buffer; reduce scope within requirements; ask for clarification; renegotiate when appropriate; remove obsolete work. Never silently overload the next day."
+    },
+    {
+      "name": "End-of-week review",
+      "kind": "template",
+      "content": "Completed:\nUnfinished and why:\nActual vs expected effort:\nDeadline risks:\nOne planning change for next week:"
+    },
+    {
+      "name": "Weekly plan quality review",
+      "kind": "checklist",
+      "content": "- Every deadline traces to an official source\n- Large assignments have concrete next actions\n- Dependencies are scheduled first\n- Planned work fits available capacity\n- Buffers and recovery time are present\n- Private information is excluded from unapproved tools"
+    },
+    {
+      "name": "Planning first-pass instruction",
+      "kind": "prompt",
+      "content": "Using only the supplied assignment instructions, deadlines, fixed commitments, and available work blocks, draft a weekly plan. Show source dates, dependencies, effort ranges, buffers, and one daily starting action. Mark missing or conflicting information as [VERIFY]. Do not infer health, disability, or private circumstances. Return a draft for student review."
+    }
+  ],
+  "exampleExecution": {
+    "scenario": "Plan a week containing two classes, one assignment milestone, and an existing personal commitment.",
+    "inputs": [
+      "Course deadlines",
+      "Calendar commitments",
+      "Unfinished tasks"
+    ],
+    "outputs": [
+      "Prioritized task list",
+      "Weekly schedule",
+      "Daily starting actions"
+    ],
+    "observations": [
+      "Illustrative run: nine official deadlines and commitments were captured with source links.",
+      "One assignment was split into four work blocks, and the first draft schedule exceeded capacity by 90 minutes before student review.",
+      "Illustrative total: 84 minutes, compared with the 100-minute user estimate; this is an example, not a measured product claim.",
+      "The student made all priority and capacity decisions and added a recovery block."
+    ]
+  },
+  "riskNotes": [
+    "Review AI-assisted output for accuracy before use.",
+    "Do not include private health, disability, or account information in unapproved AI tools."
+  ],
+  "measurement": {
+    "baselineTimeMinutes": 100,
+    "targetTimeMinutes": 80,
+    "baselineStepCount": 4,
+    "targetStepCount": 10,
+    "qualityIndicators": [
+      "Required output is complete",
+      "Human review finds no critical errors",
+      "The user can repeat the workflow without assistance"
+    ],
+    "reviewQuestions": [
+      "How many minutes did each step and the full workflow take?",
+      "How many factual, structural, or scheduling corrections were required?",
+      "Where did you stop, become uncertain, or need operator help?",
+      "Rate the effort required from 1 (very low) to 5 (very high).",
+      "Could you repeat the workflow next time without assistance? Why or why not?",
+      "Which reusable asset helped, and what should change before the next run?"
+    ]
+  }
+}

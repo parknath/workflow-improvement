@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "workflow-intake.schema.json",
+  "title": "Workflow Lab Intake",
+  "type": "object",
+  "required": ["workflowName", "userRole", "objective", "trigger", "frequency", "currentTimeMinutes", "tools", "inputs", "desiredOutputs", "currentSteps", "majorFrustrations", "repeatedActions", "humanJudgmentRequired", "sensitiveInformation", "successDefinition", "desiredImprovement"],
+  "properties": {
+    "workflowName": { "type": "string", "minLength": 2 },
+    "userRole": { "type": "string", "minLength": 2 },
+    "objective": { "type": "string", "minLength": 5 },
+    "trigger": { "type": "string", "minLength": 2 },
+    "frequency": { "type": "string", "minLength": 2 },
+    "currentTimeMinutes": { "type": "number", "exclusiveMinimum": 0 },
+    "tools": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "inputs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "desiredOutputs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+    "currentSteps": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "order", "description", "tool", "inputs", "output", "estimatedMinutes", "painPoints", "decisionsRequired", "repeated", "humanReviewMandatory"],
+        "properties": {
+          "id": { "type": "string" }, "order": { "type": "integer", "minimum": 1 },
+          "description": { "type": "string", "minLength": 2 }, "tool": { "type": "string", "minLength": 1 },
+          "inputs": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }, "output": { "type": "string", "minLength": 1 },
+          "estimatedMinutes": { "type": "number", "exclusiveMinimum": 0 },
+          "painPoints": { "type": "array", "items": { "type": "string" } },
+          "decisionsRequired": { "type": "array", "items": { "type": "string" } },
+          "repeated": { "type": "boolean" }, "humanReviewMandatory": { "type": "boolean" }
+        }
+      }
+    },
+    "majorFrustrations": { "type": "array", "items": { "type": "string" } },
+    "repeatedActions": { "type": "array", "items": { "type": "string" } },
+    "humanJudgmentRequired": { "type": "array", "items": { "type": "string" } },
+    "sensitiveInformation": { "type": "string", "minLength": 1 },
+    "successDefinition": { "type": "string", "minLength": 5 },
+    "desiredImprovement": { "type": "string", "minLength": 5 }
+  }
+}

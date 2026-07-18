@@ -1,0 +1,71 @@
+{
+  "workflowName": "Plan an academic week",
+  "userRole": "University student",
+  "objective": "Create a realistic plan for classes, assignments, study, and project work",
+  "trigger": "Sunday afternoon",
+  "frequency": "Weekly",
+  "currentTimeMinutes": 100,
+  "tools": ["LMS", "Email", "Calendar", "Notes"],
+  "inputs": ["Course deadlines", "Calendar commitments", "Unfinished tasks"],
+  "desiredOutputs": ["Prioritized task list", "Weekly schedule", "Daily starting actions"],
+  "currentSteps": [
+    {
+      "id": "s1",
+      "order": 1,
+      "description": "Search the LMS and email for deadlines",
+      "tool": "LMS and Email",
+      "inputs": ["Course pages", "Messages"],
+      "output": "Deadline list",
+      "estimatedMinutes": 30,
+      "painPoints": ["Information is scattered and deadlines get missed"],
+      "decisionsRequired": [],
+      "repeated": true,
+      "humanReviewMandatory": false
+    },
+    {
+      "id": "s2",
+      "order": 2,
+      "description": "Rewrite assignments into a task list",
+      "tool": "Notes",
+      "inputs": ["Deadline list"],
+      "output": "Task list",
+      "estimatedMinutes": 20,
+      "painPoints": ["Large assignments stay vague"],
+      "decisionsRequired": [],
+      "repeated": true,
+      "humanReviewMandatory": false
+    },
+    {
+      "id": "s3",
+      "order": 3,
+      "description": "Estimate effort and prioritize work",
+      "tool": "Notes",
+      "inputs": ["Task list"],
+      "output": "Prioritized work",
+      "estimatedMinutes": 25,
+      "painPoints": ["Time estimates are optimistic"],
+      "decisionsRequired": ["Academic priorities", "Available energy"],
+      "repeated": true,
+      "humanReviewMandatory": true
+    },
+    {
+      "id": "s4",
+      "order": 4,
+      "description": "Build the weekly calendar",
+      "tool": "Calendar",
+      "inputs": ["Prioritized work", "Fixed commitments"],
+      "output": "Weekly schedule",
+      "estimatedMinutes": 25,
+      "painPoints": ["Plans leave no recovery time"],
+      "decisionsRequired": ["Personal capacity"],
+      "repeated": true,
+      "humanReviewMandatory": true
+    }
+  ],
+  "majorFrustrations": ["Scattered deadlines", "Unrealistic schedules", "Not knowing where to start"],
+  "repeatedActions": ["Checking each course page", "Copying deadlines", "Rescheduling unfinished work"],
+  "humanJudgmentRequired": ["Personal priorities", "Realistic capacity"],
+  "sensitiveInformation": "Do not include private health, disability, or account information in unapproved AI tools.",
+  "successDefinition": "Start each day knowing the next action and complete important deadlines on time",
+  "desiredImprovement": "One consistent weekly planning ritual with a recovery process"
+}

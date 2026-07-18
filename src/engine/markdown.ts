@@ -1,0 +1,19 @@
+import type { WorkflowPackage } from "../types";
+
+const cell = (value: string) => value.replace(/\|/g, "\\|").replace(/\n/g, " ");
+const table = (headers: string[], rows: string[][]) => `| ${headers.map(cell).join(" | ")} |\n| ${headers.map(() => "---").join(" | ")} |\n${rows.map((row) => `| ${row.map(cell).join(" | ")} |`).join("\n")}\n`;
+
+export function renderMarkdownFiles(pkg: WorkflowPackage): Record<string, string> {
+  const meta = `# ${pkg.metadata.workflowName}\n\n${pkg.metadata.objective}\n\nVersion ${pkg.version}\n`;
+  return {
+    "01-current-workflow-map.md": `${meta}\n## Baseline\n\n- ${pkg.baseline.numberOfSteps} current steps\n- ${pkg.baseline.estimatedTimeMinutes} estimated minutes\n- ${pkg.baseline.majorBottlenecks} major bottlenecks prioritized\n\n## Current sequence\n\n${table(["Step", "Current action", "Inputs", "Output", "Tool", "Minutes", "Pain points"], pkg.diagnosis.map((s) => [String(s.order), s.description, s.inputs.join(", ") || "—", s.output || "—", s.tool, String(s.estimatedMinutes), s.painPoints.join(", ") || "—"]))}`,
+    "02-diagnosis.md": `${meta}\n## Summary\n\n${pkg.summary}\n\n${table(["Step", "Classification", "Opportunity", "Recommendation"], pkg.diagnosis.map((s) => [s.description, s.classification, String(s.opportunityScore), s.recommendation]))}`,
+    "03-improved-workflow.md": `${meta}\n${pkg.improvedWorkflow.map((s) => `## ${s.order}. ${s.title}\n\n- Purpose: Produce ${s.output.toLowerCase()} reliably.\n- Input: ${s.input}\n- Action: ${s.action}\n- Tool: ${s.tool}\n- Output: ${s.output}\n- AI involvement: ${s.aiInvolvement}\n- Human review: ${s.humanReview}\n- Time target: ${s.estimatedMinutes} minutes\n- Stop or escalate if: ${s.failureCondition}`).join("\n\n")}`,
+    "04-operating-guide.md": `${meta}\n## Before starting\n\n- Confirm the workflow trigger has occurred.\n- Gather the named inputs in the approved workspace.\n- Confirm the desired output and definition of done.\n- Name the person responsible for every human review.\n- Start a timer for each step.\n\n## Run sequence\n\n${pkg.improvedWorkflow.map((s) => `${s.order}. **${s.title}** — produce ${s.output}; target ${s.estimatedMinutes} minutes.`).join("\n")}\n\n## Human checkpoints\n\n${pkg.improvedWorkflow.map((s) => `- **${s.title}:** ${s.humanReview}`).join("\n")}\n\n## Stop and escalate\n\nWhen a failure condition is met, do not improvise around missing evidence, privacy restrictions, or accountable decisions. Return to the named input owner or reviewer and record the interruption for the next workflow revision.\n`,
+    "05-ai-instructions.md": `${meta}\n${pkg.assets.filter((a) => a.kind === "prompt").map((a) => `## ${a.name}\n\n${a.content}`).join("\n\n")}`,
+    "06-templates.md": `${meta}\n${pkg.assets.filter((a) => a.kind === "template").map((a) => `## ${a.name}\n\n${a.content}`).join("\n\n")}`,
+    "07-quality-checklist.md": `${meta}\n${pkg.assets.filter((a) => a.kind === "checklist").map((a) => `## ${a.name}\n\n${a.content}`).join("\n\n")}\n\n## Risk notes\n\n${pkg.riskNotes.map((n) => `- ${n}`).join("\n")}`,
+    "08-example-run.md": `${meta}\n## Scenario\n\n${pkg.exampleExecution.scenario}\n\n## Inputs used\n\n${pkg.exampleExecution.inputs.map((item) => `- ${item}`).join("\n")}\n\n## Expected outputs\n\n${pkg.exampleExecution.outputs.map((item) => `- ${item}`).join("\n")}\n\n## What to record\n\n${pkg.exampleExecution.observations.map((item) => `- ${item}`).join("\n")}\n`,
+    "09-measurement-plan.md": `${meta}\n- Baseline: ${pkg.measurement.baselineTimeMinutes} minutes across ${pkg.measurement.baselineStepCount} current steps\n- Prototype target: ${pkg.measurement.targetTimeMinutes} minutes across ${pkg.measurement.targetStepCount} defined steps (estimate, not a guarantee)\n\n## Quality indicators\n\n${pkg.measurement.qualityIndicators.map((q) => `- ${q}`).join("\n")}\n\n## Post-use feedback\n\n${pkg.measurement.reviewQuestions.map((q) => `- ${q}`).join("\n")}`,
+  };
+}
