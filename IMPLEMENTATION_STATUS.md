@@ -21,7 +21,7 @@ The first local prototype is complete against the 2026-07-15 handoff definition 
 - Human-review, privacy, safety, failure/escalation, and measurement controls.
 - Product, scope, technical, website, engine, and run documentation.
 - A professor assignment-redesign pilot protocol with uncoached task instructions, safety boundaries, two-run evidence capture, separate willingness-to-pay questions, and precommitted continue/change/kill rules.
-- Local Git version history initialized and connected to the public `parknath/workflow-improvement` repository; initial publication remains pending until the first verified commit is pushed.
+- Local Git version history initialized with verified root commit `310f3f4` and connected to the public `parknath/workflow-improvement` repository. Remote publication is blocked because this execution environment has neither a usable GitHub SSH key nor HTTPS credentials.
 - A single `pnpm verify` quality gate covering tests, type checking, build, package generation, JSON Schema validation, generated-package audits, and six-route HTTP checks, mirrored in GitHub Actions for every push and pull request.
 
 ## Verification record
