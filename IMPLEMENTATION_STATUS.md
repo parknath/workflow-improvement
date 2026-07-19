@@ -43,6 +43,7 @@ The first public static prototype is complete against the 2026-07-15 handoff def
 - The built bundle contains the failure-to-correction flow, pending-approval state, and rule-based-prototype disclosure.
 - `pnpm verify`: passed the complete local gate on 2026-07-19, including all three example schema checks, both generated-package audits, and all six HTTP routes.
 - GitHub quality and Pages workflows passed for release commit `382ac33`. The deployed root plus `/how-it-works/`, `/workflows/`, `/demo/`, `/intake/`, and `/sample-result/` returned HTTPS 200. Desktop rendering and a 390px intake layout were checked; the mobile page had no horizontal overflow.
+- The simplified self-use release `070777a` also passed both remote workflows. The live homepage and intake returned HTTPS 200, the three starter choices rendered, and the lecture starter opened the six-step intake with its editable example selected.
 
 ## Assumptions
 
