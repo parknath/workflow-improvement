@@ -1,0 +1,112 @@
+{
+  "workflowName": "Revise an assignment for current AI conditions",
+  "userRole": "University professor",
+  "objective": "Preserve the learning objective while making permitted AI use, process evidence, and human judgment explicit",
+  "trigger": "Before the assignment is next published or when institutional AI guidance changes",
+  "frequency": "Two or more times per term",
+  "currentTimeMinutes": 150,
+  "tools": [
+    "Institutional AI guidance",
+    "Syllabus and assignment document",
+    "Rubric",
+    "Learning management system",
+    "Institution-approved AI tool"
+  ],
+  "inputs": [
+    "Learning objectives",
+    "Current assignment instructions",
+    "Current rubric",
+    "Institutional and department AI guidance"
+  ],
+  "desiredOutputs": [
+    "Revised assignment instructions",
+    "Explicit AI-use boundary",
+    "Aligned rubric and process-evidence plan",
+    "Professor-approved publication checklist"
+  ],
+  "currentSteps": [
+    {
+      "id": "a1",
+      "order": 1,
+      "description": "Re-read the learning objectives and current assignment",
+      "tool": "Syllabus and assignment document",
+      "inputs": ["Learning objectives", "Current assignment instructions"],
+      "output": "List of objectives and assignment elements that must be preserved",
+      "estimatedMinutes": 20,
+      "painPoints": ["The original design rationale is scattered across documents"],
+      "decisionsRequired": ["Which learning objectives are essential"],
+      "repeated": true,
+      "humanReviewMandatory": true
+    },
+    {
+      "id": "a2",
+      "order": 2,
+      "description": "Compare institutional and department AI guidance",
+      "tool": "Institutional AI guidance",
+      "inputs": ["Institutional and department AI guidance"],
+      "output": "Applicable policy and approved-tool constraints",
+      "estimatedMinutes": 25,
+      "painPoints": ["Guidance is broad, changes over time, and is difficult to translate into one assignment"],
+      "decisionsRequired": ["Which guidance applies to this course and task"],
+      "repeated": true,
+      "humanReviewMandatory": true
+    },
+    {
+      "id": "a3",
+      "order": 3,
+      "description": "Decide where AI use is allowed, required, or prohibited",
+      "tool": "Assignment design notes",
+      "inputs": ["Learning objectives", "Applicable policy and approved-tool constraints"],
+      "output": "Assignment-level AI-use boundary with rationale",
+      "estimatedMinutes": 35,
+      "painPoints": ["Rules must be clear without replacing the professor's pedagogical judgment"],
+      "decisionsRequired": ["Permitted AI role", "Required human reasoning", "Disclosure expectations"],
+      "repeated": true,
+      "humanReviewMandatory": true
+    },
+    {
+      "id": "a4",
+      "order": 4,
+      "description": "Revise instructions, process evidence, and rubric criteria",
+      "tool": "Assignment document and rubric",
+      "inputs": ["Current assignment instructions", "Current rubric", "Assignment-level AI-use boundary with rationale"],
+      "output": "Aligned draft assignment and rubric",
+      "estimatedMinutes": 50,
+      "painPoints": ["Changes in one document can contradict another and create student confusion"],
+      "decisionsRequired": ["What evidence demonstrates the intended learning"],
+      "repeated": true,
+      "humanReviewMandatory": true
+    },
+    {
+      "id": "a5",
+      "order": 5,
+      "description": "Test the revised assignment and approve it for publication",
+      "tool": "Institution-approved AI tool and learning management system",
+      "inputs": ["Aligned draft assignment and rubric", "Applicable policy and approved-tool constraints"],
+      "output": "Professor-approved assignment package",
+      "estimatedMinutes": 20,
+      "painPoints": ["A plausible-looking draft can still weaken the objective or violate tool rules"],
+      "decisionsRequired": ["Academic fitness", "Policy fit", "Final publication approval"],
+      "repeated": true,
+      "humanReviewMandatory": true
+    }
+  ],
+  "majorFrustrations": [
+    "Translating broad policy into assignment-level instructions",
+    "Keeping the assignment, rubric, and AI-use boundary aligned",
+    "Repeating the review when guidance or tools change"
+  ],
+  "repeatedActions": [
+    "Checking policy sources",
+    "Comparing assignment and rubric language",
+    "Testing instructions against approved tools"
+  ],
+  "humanJudgmentRequired": [
+    "Learning-objective decisions",
+    "Acceptable evidence of student learning",
+    "Final academic and publication approval"
+  ],
+  "sensitiveInformation": "Do not enter student submissions, names, grades, accommodations, confidential research, or restricted course materials into unapproved tools.",
+  "successDefinition": "A professor can publish and later revisit an aligned assignment package with clear AI boundaries and a recorded human approval",
+  "desiredImprovement": "A repeatable, policy-aware review process that exposes conflicts before publication and can be measured on a second run"
+}

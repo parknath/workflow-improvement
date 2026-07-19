@@ -11,7 +11,10 @@ export function scoreStep(step: WorkflowStep, workflowMinutes: number): StepScor
     cognitiveLoad: clamp(2 + step.decisionsRequired.length + step.painPoints.length / 2),
     errorRisk: clamp(1 + step.decisionsRequired.length + (/(accuracy|error|miss|wrong|confus)/.test(painText) ? 2 : 0)),
     automationSuitability: clamp(3 + (step.repeated ? 1 : 0) - step.decisionsRequired.length - (step.humanReviewMandatory ? 1 : 0)),
-    humanJudgment: clamp(1 + step.decisionsRequired.length * 2 + (step.humanReviewMandatory ? 2 : 0) + (/(academic|teaching|quality|appropriate)/.test(humanText) ? 1 : 0)),
+    // A required review is an approval boundary, not proof that AI cannot prepare
+    // a draft. Multiple decisions or explicitly academic judgment still reach the
+    // HUMAN_ONLY threshold; a single reviewable decision can remain AI_ASSIST.
+    humanJudgment: clamp(1 + step.decisionsRequired.length * 2 + (step.humanReviewMandatory ? 1 : 0) + (/(academic|teaching|quality|appropriate)/.test(humanText) ? 1 : 0)),
   };
 }
 

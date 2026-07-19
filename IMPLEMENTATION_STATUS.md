@@ -1,6 +1,6 @@
 # Implementation status
 
-Last updated: 2026-07-18
+Last updated: 2026-07-19
 
 ## Current state
 
@@ -21,22 +21,25 @@ The first local prototype is complete against the 2026-07-15 handoff definition 
 - Human-review, privacy, safety, failure/escalation, and measurement controls.
 - Product, scope, technical, website, engine, and run documentation.
 - A professor assignment-redesign pilot protocol with uncoached task instructions, safety boundaries, two-run evidence capture, separate willingness-to-pay questions, and precommitted continue/change/kill rules.
+- A schema-valid assignment-redesign pilot fixture that exercises the generic professor path before a live pilot.
+- Generic professor workflow assets for approved-tool/data-boundary preflight, accountable academic decisions, and second-run evidence capture.
+- Correct separation between reviewable `AI_ASSIST` drafting and `HUMAN_ONLY` academic decisions; mandatory human review remains explicit for assisted steps.
 - Local Git version history initialized with verified root commit `310f3f4` and connected to the public `parknath/workflow-improvement` repository. Remote publication is blocked because this execution environment has neither a usable GitHub SSH key nor HTTPS credentials.
 - A single `pnpm verify` quality gate covering tests, type checking, build, package generation, JSON Schema validation, generated-package audits, and six-route HTTP checks, mirrored in GitHub Actions for every push and pull request.
 
 ## Verification record
 
-- `pnpm test`: passed 14 tests covering valid/invalid intake, scoring bounds, elimination classification, both complete workflows, executable step fields, asset coverage, nine-file Markdown rendering, step add/reorder/remove behavior, valid intake/package JSON download serialization, complaint validation, isolated correction drafting, preserved safeguards, and mandatory approval before replacement.
+- `pnpm test`: passed 16 tests covering valid/invalid intake, scoring bounds, reviewable AI assistance versus human-only decisions, elimination classification, both complete workflows, the assignment-redesign professor bundle, executable step fields, asset coverage, nine-file Markdown rendering, step add/reorder/remove behavior, valid intake/package JSON download serialization, complaint validation, isolated correction drafting, preserved safeguards, and mandatory approval before replacement.
 - `pnpm run typecheck`: passed with TypeScript strict mode.
 - `pnpm run build`: passed; Vite produced the production bundle.
 - `pnpm generate`: passed; generated professor JSON plus nine non-empty Markdown files.
 - `pnpm generate -- --student`: passed; generated student JSON plus nine non-empty Markdown files.
-- Draft 2020-12 JSON Schema: both `examples/lecture-intake.json` and `examples/student-intake.json` passed validation.
+- Draft 2020-12 JSON Schema: `examples/lecture-intake.json`, `examples/student-intake.json`, and `examples/assignment-redesign-intake.json` passed validation.
 - Generated-package audit: professor package has 11 executable redesigned steps, 9 reusable assets, a 240-minute baseline, and a clearly labeled 124-minute prototype target; student package has 10 executable redesigned steps, 10 reusable assets, a 100-minute baseline, and a clearly labeled 80-minute prototype target.
 - Generated content inspection: current maps include actions, inputs, outputs, tools, time, and pain points; operating guides include human checkpoints and escalation; example runs are explicitly illustrative; measurement plans include before/after step counts, corrections, effort, repeatability, and post-use feedback.
 - Route smoke check: all six production routes returned HTTP 200. The built bundle contains the intake generation action, generated-package result, and local-generation disclosure. Non-GUI package audits found zero improved steps missing an action, human review, or failure condition.
 - The built bundle contains the failure-to-correction flow, pending-approval state, and rule-based-prototype disclosure.
-- `pnpm verify`: passed the complete local gate on 2026-07-18, including both example schema checks, both generated-package audits, and all six HTTP routes.
+- `pnpm verify`: passed the complete local gate on 2026-07-19, including all three example schema checks, both generated-package audits, and all six HTTP routes.
 
 ## Assumptions
 

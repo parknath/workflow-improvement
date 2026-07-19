@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "generatedAt": "2026-07-18T10:54:35.537Z",
+  "generatedAt": "2026-07-19T00:47:08.348Z",
   "metadata": {
     "workflowName": "Prepare a weekly lecture",
     "userRole": "University professor",
@@ -122,17 +122,17 @@
       ],
       "repeated": true,
       "humanReviewMandatory": true,
-      "classification": "HUMAN_ONLY",
+      "classification": "AI_ASSIST",
       "scores": {
         "repetition": 5,
         "timeCost": 4,
         "cognitiveLoad": 4,
         "errorRisk": 2,
         "automationSuitability": 2,
-        "humanJudgment": 5
+        "humanJudgment": 4
       },
-      "opportunityScore": 10.8,
-      "recommendation": "Keep the decision with the user and provide a review checklist."
+      "opportunityScore": 11.5,
+      "recommendation": "Let AI create a first pass, then require a named human review."
     },
     {
       "id": "l5",
@@ -152,17 +152,17 @@
       ],
       "repeated": true,
       "humanReviewMandatory": true,
-      "classification": "HUMAN_ONLY",
+      "classification": "AI_ASSIST",
       "scores": {
         "repetition": 5,
         "timeCost": 1,
         "cognitiveLoad": 4,
         "errorRisk": 2,
         "automationSuitability": 2,
-        "humanJudgment": 5
+        "humanJudgment": 4
       },
-      "opportunityScore": 7.8,
-      "recommendation": "Keep the decision with the user and provide a review checklist."
+      "opportunityScore": 8.5,
+      "recommendation": "Let AI create a first pass, then require a named human review."
     },
     {
       "id": "l6",
@@ -245,17 +245,17 @@
       ],
       "repeated": true,
       "humanReviewMandatory": true,
-      "classification": "HUMAN_ONLY",
+      "classification": "AI_ASSIST",
       "scores": {
         "repetition": 5,
         "timeCost": 4,
         "cognitiveLoad": 4,
         "errorRisk": 2,
         "automationSuitability": 2,
-        "humanJudgment": 5
+        "humanJudgment": 4
       },
-      "opportunityScore": 10.8,
-      "recommendation": "Keep the decision with the user and provide a review checklist."
+      "opportunityScore": 11.5,
+      "recommendation": "Let AI create a first pass, then require a named human review."
     },
     {
       "id": "l3",

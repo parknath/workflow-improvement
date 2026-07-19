@@ -2,9 +2,11 @@ import { describe, expect, it } from "vitest";
 import { lectureIntake, studentIntake } from "../data/fixtures";
 import { generatePackage } from "./generator";
 import { renderMarkdownFiles } from "./markdown";
-import { scoreStep } from "./scoring";
+import { classifyStep, scoreStep } from "./scoring";
 import { validateIntake } from "./validation";
 import { appendWorkflowStep, intakeDownloadName, moveWorkflowStep, removeWorkflowStep, serializeIntake, serializeWorkflowPackage, workflowPackageDownloadName } from "../intake";
+import assignmentRedesignIntake from "../../examples/assignment-redesign-intake.json";
+import type { WorkflowIntake } from "../types";
 
 describe("workflow engine", () => {
   it("validates the complete fixture", () => expect(validateIntake(lectureIntake).valid).toBe(true));
@@ -12,6 +14,21 @@ describe("workflow engine", () => {
   it("keeps scores within one to five", () => {
     Object.values(scoreStep(lectureIntake.currentSteps[0], 240)).forEach((score) => expect(score).toBeGreaterThanOrEqual(1));
     Object.values(scoreStep(lectureIntake.currentSteps[0], 240)).forEach((score) => expect(score).toBeLessThanOrEqual(5));
+  });
+  it("separates reviewable AI assistance from decisions that must remain human-only", () => {
+    const reviewableDraft = {
+      ...lectureIntake.currentSteps[0],
+      description: "Draft revised instructions from approved sources",
+      decisionsRequired: ["Alignment with the approved objective"],
+      humanReviewMandatory: true,
+    };
+    const accountableDecision = {
+      ...reviewableDraft,
+      description: "Approve the final academic policy and publish it",
+      decisionsRequired: ["Academic policy", "Final publication approval"],
+    };
+    expect(classifyStep(reviewableDraft, scoreStep(reviewableDraft, 120))).toBe("AI_ASSIST");
+    expect(classifyStep(accountableDecision, scoreStep(accountableDecision, 120))).toBe("HUMAN_ONLY");
   });
   it("generates a complete package and nine markdown files", () => {
     const pkg = generatePackage(lectureIntake);
@@ -28,6 +45,22 @@ describe("workflow engine", () => {
     expect(pkg.assets.some((asset) => asset.kind === "prompt")).toBe(true);
     expect(pkg.assets.some((asset) => asset.kind === "checklist")).toBe(true);
     expect(pkg.measurement.targetTimeMinutes).toBeLessThan(pkg.measurement.baselineTimeMinutes);
+  });
+  it("gives a non-lecture professor workflow a policy preflight, decision record, and run evidence log", () => {
+    const pkg = generatePackage(assignmentRedesignIntake as WorkflowIntake);
+    expect(pkg.improvedWorkflow).toHaveLength(5);
+    expect(pkg.improvedWorkflow.some((step) => step.classification === "AI_ASSIST")).toBe(true);
+    expect(pkg.improvedWorkflow.some((step) => step.classification === "HUMAN_ONLY")).toBe(true);
+    expect(pkg.improvedWorkflow.filter((step) => step.classification === "AI_ASSIST").every((step) => step.humanReview.startsWith("Confirm "))).toBe(true);
+    expect(pkg.assets.map((asset) => asset.name)).toEqual(expect.arrayContaining([
+      "Approved-tool and data-boundary preflight",
+      "Academic decision record",
+      "Run evidence log",
+    ]));
+    expect(pkg.assets.find((asset) => asset.name === "Approved-tool and data-boundary preflight")?.content).toContain("manual or institution-approved fallback");
+    expect(pkg.assets.find((asset) => asset.name === "Academic decision record")?.content).toContain("Human approval recorded");
+    expect(pkg.assets.find((asset) => asset.name === "Run evidence log")?.content).toContain("Result on the next comparable run");
+    expect(pkg.improvedWorkflow.every((step) => step.action && step.humanReview && step.failureCondition)).toBe(true);
   });
   it("rejects steps without executable inputs and outputs", () => {
     const invalid = structuredClone(lectureIntake);

@@ -2,7 +2,7 @@
 
 Workflow Lab is a browser-based concierge-MVP prototype for improving one recurring workflow at a time. It maps the current process, diagnoses wasted effort and risk, proposes an executable redesign, and produces reusable templates, AI-assisted instructions, checkpoints, and a measurement plan.
 
-The first two complete workflows are professor lecture preparation and student weekly academic planning. A user can complete the intake and immediately generate, inspect, and download their workflow package in the browser. After a real run, the user can report one failed step, record usefulness/time/corrections, review a locally drafted correction, and explicitly approve it before it replaces the active package. Generation and correction drafting are local and deterministic; the prototype does not call an AI provider or send intake or feedback data to a server.
+The first two complete workflows are professor lecture preparation and student weekly academic planning. Generic professor workflows also receive an approved-tool/data-boundary preflight, an academic decision record, and a run evidence log so a real pilot can preserve human authority and measure a second run. A user can complete the intake and immediately generate, inspect, and download their workflow package in the browser. After a real run, the user can report one failed step, record usefulness/time/corrections, review a locally drafted correction, and explicitly approve it before it replaces the active package. Generation and correction drafting are local and deterministic; the prototype does not call an AI provider or send intake or feedback data to a server.
 
 ## Run the website
 
@@ -50,7 +50,7 @@ pnpm verify
 - `src/App.tsx`: route views, interactive demo, intake-to-package generation, and sample result.
 - `src/config.ts`: centralized working name and primary public copy.
 - `schemas/`: portable JSON Schema for exported intake data.
-- `examples/`: schema-valid example intake JSON for both initial users.
+- `examples/`: schema-valid intake JSON for lecture preparation, student planning, and the professor assignment-redesign pilot preflight.
 - `workflows/`: operating definitions for the first two complete templates.
 - `generated/`: local engine output; safe to regenerate.
 - `validation/`: evidence-gathering protocols for professor pilots.

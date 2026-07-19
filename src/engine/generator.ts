@@ -105,6 +105,12 @@ function assets(intake: WorkflowIntake): WorkflowAsset[] {
     { name: "Weekly plan quality review", kind: "checklist", content: "- Every deadline traces to an official source\n- Large assignments have concrete next actions\n- Dependencies are scheduled first\n- Planned work fits available capacity\n- Buffers and recovery time are present\n- Private information is excluded from unapproved tools" },
     { name: "Planning first-pass instruction", kind: "prompt", content: "Using only the supplied assignment instructions, deadlines, fixed commitments, and available work blocks, draft a weekly plan. Show source dates, dependencies, effort ranges, buffers, and one daily starting action. Mark missing or conflicting information as [VERIFY]. Do not infer health, disability, or private circumstances. Return a draft for student review." },
   ];
+  if (/professor|faculty|instructor/i.test(intake.userRole)) return [
+    ...generic,
+    { name: "Approved-tool and data-boundary preflight", kind: "checklist", content: "- Name the institutional policy or approved-tool source and date checked\n- Confirm each selected tool is permitted for this workflow\n- List data, student work, course IP, and research material that must not be entered\n- Confirm approved sources and permissions for every input\n- Name a manual or institution-approved fallback\n- Stop when tool approval, data classification, or source permission is unclear" },
+    { name: "Academic decision record", kind: "template", content: "Workflow and run date:\nAccountable professor:\nLearning or academic objective that must not change:\nPolicy and approved-tool sources consulted:\nAI-assisted actions allowed:\nAI-assisted actions prohibited:\nEvidence reviewed:\nDecision and rationale:\nHuman approval recorded by / at:\nTrigger for revisiting this decision:" },
+    { name: "Run evidence log", kind: "template", content: "Run date and representative task:\nBaseline minutes and basis:\nActual minutes by step:\nCorrections required:\nOperator help or unclear instructions:\nPolicy, privacy, or tool-fit conflicts:\nUsefulness (1-5) and reason:\nMost consequential failure:\nCorrection approved, rejected, or unsafe:\nResult on the next comparable run:\nWould use again / preferred purchase format / reason:" },
+  ];
   return generic;
 }
 

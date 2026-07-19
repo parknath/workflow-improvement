@@ -9,7 +9,7 @@ The engine accepts one workflow with name, role, objective, trigger, frequency, 
 1. Validate the structured intake and reject missing executable information.
 2. Map the current workflow using the ordered steps and baseline.
 3. Score each step from one to five for repetition, time cost, cognitive load, error risk, automation suitability, and human judgment.
-4. Assign one primary classification: `ELIMINATE`, `SIMPLIFY`, `STANDARDIZE`, `TEMPLATE`, `AUTOMATE`, `AI_ASSIST`, or `HUMAN_ONLY`.
+4. Assign one primary classification: `ELIMINATE`, `SIMPLIFY`, `STANDARDIZE`, `TEMPLATE`, `AUTOMATE`, `AI_ASSIST`, or `HUMAN_ONLY`. A mandatory human review is an approval boundary, not an automatic `HUMAN_ONLY` classification: a reviewable first draft may be `AI_ASSIST`, while multi-decision or high-judgment academic choices remain `HUMAN_ONLY`.
 5. Rank opportunities using expected gain reduced by error and judgment restraint.
 6. Generate an executable redesign, assets, review points, privacy notes, example execution, and measurement plan.
 7. Render the package as JSON and nine Markdown files.

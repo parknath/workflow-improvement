@@ -28,7 +28,6 @@
     "@types/react": "latest",
     "@types/react-dom": "latest",
     "ajv": "8.17.1",
-    "ajv": "8.17.1",
     "tsx": "latest",
     "vitest": "latest"
   }

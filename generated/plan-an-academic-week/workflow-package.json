@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "generatedAt": "2026-07-18T10:54:36.126Z",
+  "generatedAt": "2026-07-19T00:47:08.669Z",
   "metadata": {
     "workflowName": "Plan an academic week",
     "userRole": "University student",
@@ -121,17 +121,17 @@
       ],
       "repeated": true,
       "humanReviewMandatory": true,
-      "classification": "HUMAN_ONLY",
+      "classification": "AI_ASSIST",
       "scores": {
         "repetition": 5,
         "timeCost": 3,
         "cognitiveLoad": 4,
         "errorRisk": 2,
         "automationSuitability": 2,
-        "humanJudgment": 5
+        "humanJudgment": 4
       },
-      "opportunityScore": 9.8,
-      "recommendation": "Keep the decision with the user and provide a review checklist."
+      "opportunityScore": 10.5,
+      "recommendation": "Let AI create a first pass, then require a named human review."
     }
   ],
   "priorityImprovements": [
@@ -211,17 +211,17 @@
       ],
       "repeated": true,
       "humanReviewMandatory": true,
-      "classification": "HUMAN_ONLY",
+      "classification": "AI_ASSIST",
       "scores": {
         "repetition": 5,
         "timeCost": 3,
         "cognitiveLoad": 4,
         "errorRisk": 2,
         "automationSuitability": 2,
-        "humanJudgment": 5
+        "humanJudgment": 4
       },
-      "opportunityScore": 9.8,
-      "recommendation": "Keep the decision with the user and provide a review checklist."
+      "opportunityScore": 10.5,
+      "recommendation": "Let AI create a first pass, then require a named human review."
     }
   ],
   "improvedWorkflow": [

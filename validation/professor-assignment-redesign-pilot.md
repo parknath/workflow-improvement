@@ -58,6 +58,7 @@ If the professor's institution prohibits the selected tool or use, stop the pilo
 ## Materials
 
 - A laptop with the local Workflow Lab prototype.
+- `examples/assignment-redesign-intake.json` as a schema-valid moderator preflight reference; the participant must still enter their own real process without copying fixture answers.
 - The assignment instructions, learning objectives, rubric, and relevant institutional/department AI guidance.
 - A timer.
 - This protocol and the evidence table below.
