@@ -17,6 +17,8 @@ Open the local URL shown by Vite. The six routes are `/`, `/how-it-works`, `/wor
 
 ## Public website
 
+Use the public prototype at [parknath.github.io/workflow-improvement](https://parknath.github.io/workflow-improvement/).
+
 The public GitHub Pages release is built and deployed from `main` by `.github/workflows/pages.yml`. The release workflow reruns the full product gate, builds with the `/workflow-improvement/` project base, adds static entries for every product route, and deploys the immutable commit through the `github-pages` environment.
 
 Build the Pages artifact locally:
