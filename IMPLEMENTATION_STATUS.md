@@ -50,7 +50,7 @@ The first public static prototype is complete against the 2026-07-15 handoff def
 - GitHub quality and Pages workflows passed for release commit `382ac33`. The deployed root plus `/how-it-works/`, `/workflows/`, `/demo/`, `/intake/`, and `/sample-result/` returned HTTPS 200. Desktop rendering and a 390px intake layout were checked; the mobile page had no horizontal overflow.
 - The simplified self-use release `070777a` also passed both remote workflows. The live homepage and intake returned HTTPS 200, the three starter choices rendered, and the lecture starter opened the six-step intake with its editable example selected.
 - The preset-first release `8cb6131` passed both remote workflows. The live assignment-redesign option opened a ready-made summary and generated the complete package without rendering the detailed intake form; the custom-workflow escape hatch and mobile layouts also passed.
-- Guided-execution release `23dccda` passed the remote quality workflow and every Pages job step. The public root and all five deep routes returned HTTPS 200; the deployed bundle contains the action-first result, step controls, measurement, approval, previous-version, next-run, persistence, and external-tool-boundary contracts.
+- Guided-execution release `23dccda` and retrieval follow-up `06c2521` passed remote quality and every Pages job step. The public root and all five deep routes returned HTTPS 200; the final deployed bundle contains the action-first result, step controls, measurement, approval, previous-version download, next-run, persistence, and external-tool-boundary contracts.
 
 ## Assumptions
 
