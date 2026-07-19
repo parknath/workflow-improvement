@@ -6,6 +6,7 @@ import { generatePackage } from "./engine/generator";
 import { approveWorkflowRevision, draftWorkflowRevision, validateWorkflowFeedback } from "./revision";
 import { validateIntake } from "./engine/validation";
 import { appendWorkflowStep, intakeDownloadName, moveWorkflowStep, removeWorkflowStep, serializeIntake, serializeWorkflowPackage, workflowPackageDownloadName } from "./intake";
+import { routeFromPathname, routeHref } from "./routing";
 import type { FeedbackCategory, WorkflowFeedback, WorkflowIntake, WorkflowPackage, WorkflowRevisionDraft, WorkflowStep } from "./types";
 
 type Route = "/" | "/how-it-works" | "/workflows" | "/demo" | "/intake" | "/sample-result";
@@ -16,10 +17,10 @@ const emptyStep = (order = 1): WorkflowStep => ({ id: crypto.randomUUID(), order
 const initialIntake: WorkflowIntake = { workflowName: "", userRole: "", objective: "", trigger: "", frequency: "Weekly", currentTimeMinutes: 60, tools: [], inputs: [], desiredOutputs: [], currentSteps: [emptyStep()], majorFrustrations: [], repeatedActions: [], humanJudgmentRequired: [], sensitiveInformation: "", successDefinition: "", desiredImprovement: "" };
 
 function useRoute() {
-  const read = () => routes.includes(location.pathname as Route) ? location.pathname as Route : "/";
+  const read = () => routeFromPathname(location.pathname, import.meta.env.BASE_URL, routes);
   const [route, setRoute] = useState<Route>(read);
   useEffect(() => { const pop = () => setRoute(read()); addEventListener("popstate", pop); return () => removeEventListener("popstate", pop); }, []);
-  const go = (next: Route) => { history.pushState({}, "", next); setRoute(next); scrollTo({ top: 0, behavior: "smooth" }); };
+  const go = (next: Route) => { history.pushState({}, "", routeHref(next, import.meta.env.BASE_URL)); setRoute(next); scrollTo({ top: 0, behavior: "smooth" }); };
   return [route, go] as const;
 }
 

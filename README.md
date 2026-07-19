@@ -15,6 +15,18 @@ pnpm dev
 
 Open the local URL shown by Vite. The six routes are `/`, `/how-it-works`, `/workflows`, `/demo`, `/intake`, and `/sample-result`.
 
+## Public website
+
+The public GitHub Pages release is built and deployed from `main` by `.github/workflows/pages.yml`. The release workflow reruns the full product gate, builds with the `/workflow-improvement/` project base, adds static entries for every product route, and deploys the immutable commit through the `github-pages` environment.
+
+Build the Pages artifact locally:
+
+```bash
+pnpm build:pages
+```
+
+Public intake and feedback remain browser-only. The static host receives the normal web request but no workflow intake, generated package, or correction report is submitted to an application server. Roll back by reverting the release commit on `main`; the deployment workflow republishes the prior application state.
+
 ## Run the engine
 
 Generate the professor package:
@@ -60,4 +72,4 @@ See `PRODUCT_SPEC.md`, `MVP_SCOPE.md`, `TECHNICAL_SPEC.md`, `WEBSITE_SPEC.md`, `
 
 ## Current limits
 
-This is a local prototype, not production software. It has no authentication, database, payments, external AI calls, analytics, integrations, permanent workflow history, durable complaint storage, or collaboration. Its correction draft is a transparent rule-based prototype of the future AI-assisted revision experience; feedback exists only in the current page session. Estimated time savings are hypotheses to test with real users, not promises.
+This is a public static prototype, not production software. It has no authentication, database, payments, external AI calls, analytics, integrations, permanent workflow history, durable complaint storage, or collaboration. Its correction draft is a transparent rule-based prototype of the future AI-assisted revision experience; feedback exists only in the current page session. Estimated time savings are hypotheses to test with real users, not promises.
