@@ -21,10 +21,11 @@ Use the public prototype at [parknath.github.io/workflow-improvement](https://pa
 
 To use it on yourself:
 
-1. Choose **Prepare a lecture** or **Plan my academic week** for ready-to-edit example answers, or **Something else** for a blank start.
-2. Replace the example with the task as you actually perform it. The guided setup checks each section before continuing.
-3. Create the package, download it, and try it on one real low-risk run.
-4. Record what failed in the result screen. Review any drafted correction before approving it.
+1. Choose **Prepare a weekly lecture**, **Update an assignment for AI**, or **Organize course materials**.
+2. Review the short ready-made summary and select **Use this workflow**. No detailed intake is required.
+3. Download the package and try it on one real low-risk run.
+4. Use **Customize first** only when the default needs adjustment, or **Build a custom workflow** when none of the common options fits.
+5. Record what failed in the result screen. Review any drafted correction before approving it.
 
 The prototype stores the draft in the current browser. Do not enter confidential or identifiable student information.
 
@@ -67,7 +68,7 @@ pnpm verify
 
 ## Architecture
 
-- `src/data/fixtures.ts`: realistic intake fixtures and workflow-library cards.
+- `src/data/fixtures.ts`: realistic ready-made workflow inputs and workflow-library cards.
 - `src/engine/`: validation, scoring, classification, generation, Markdown output, and CLI.
 - `src/revision.ts`: validated complaint-to-correction drafting and mandatory approval boundary.
 - `src/App.tsx`: route views, interactive demo, intake-to-package generation, and sample result.

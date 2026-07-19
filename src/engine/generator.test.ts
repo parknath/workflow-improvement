@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { lectureIntake, studentIntake } from "../data/fixtures";
+import { courseMaterialsIntake, lectureIntake, studentIntake } from "../data/fixtures";
 import { generatePackage } from "./generator";
 import { renderMarkdownFiles } from "./markdown";
 import { classifyStep, scoreStep } from "./scoring";
@@ -50,6 +50,13 @@ describe("workflow engine", () => {
     expect(pkg.assets.some((asset) => asset.kind === "prompt")).toBe(true);
     expect(pkg.assets.some((asset) => asset.kind === "checklist")).toBe(true);
     expect(pkg.measurement.targetTimeMinutes).toBeLessThan(pkg.measurement.baselineTimeMinutes);
+  });
+  it("supports the ready-made course-material organization option", () => {
+    expect(validateIntake(courseMaterialsIntake).valid).toBe(true);
+    const pkg = generatePackage(courseMaterialsIntake);
+    expect(pkg.metadata.workflowName).toBe("Organize course materials for a teaching week");
+    expect(pkg.improvedWorkflow).toHaveLength(courseMaterialsIntake.currentSteps.length);
+    expect(pkg.improvedWorkflow.every((step) => step.humanReview && step.failureCondition)).toBe(true);
   });
   it("gives a non-lecture professor workflow a policy preflight, decision record, and run evidence log", () => {
     const pkg = generatePackage(assignmentRedesignIntake as WorkflowIntake);

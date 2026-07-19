@@ -1,8 +1,8 @@
 export const product = {
   name: "Workflow Lab",
   descriptor: "Workflow improvement for education",
-  headline: "Make one recurring task easier.",
-  supportingCopy: "Choose one task, describe how it works today, and get a clearer process you can try.",
-  primaryAction: "Start",
+  headline: "Start with what already works.",
+  supportingCopy: "Choose a common improvement and use the ready-made workflow. Customize only when the default does not fit.",
+  primaryAction: "Choose a workflow",
   secondaryAction: "See an example",
 } as const;

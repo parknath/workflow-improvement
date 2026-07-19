@@ -2,15 +2,15 @@
 
 ## Direction
 
-The experience should feel like calm workflow consulting: warm neutral paper tones, deep green accents, strong typography, clear process diagrams, and restrained motion. It avoids robot imagery, excessive gradients, automation-at-all-costs language, chat-first interaction, and dense dashboards.
+The experience should feel calm and immediately usable: generous whitespace, system typography, neutral surfaces, one blue action color, clear choices, and restrained motion. The first screen is the product selection experience, not a marketing explanation. It avoids robot imagery, excessive gradients, automation-at-all-costs language, chat-first interaction, and dense dashboards.
 
 ## Routes
 
-- `/`: product promise, common problems, method, audiences, before/after example, boundaries, and calls to action.
+- `/`: three common ready-made professor improvements, a separate custom-workflow escape hatch, saved-draft continuation, concise method, and browser-only privacy boundary.
 - `/how-it-works`: capture, diagnose, redesign, implement, and measure method plus classifications.
-- `/workflows`: six workflow cards; lecture preparation and weekly planning are complete.
+- `/workflows`: ready-made and future workflow cards; lecture preparation, assignment redesign, course-material organization, and weekly planning are usable presets.
 - `/demo`: role/workflow selector with fixture-generated baseline, bottlenecks, priorities, redesign, estimate, and review points.
-- `/intake`: six-step guided intake with starter examples, browser storage, per-step validation, and JSON download.
+- `/intake`: short ready-made workflow confirmation with immediate package generation, plus an optional six-step detailed intake with browser storage, per-step validation, and JSON download.
 - `/sample-result`: complete professor result across overview, diagnosis, redesigned workflow, assets, and measurement.
 
 ## Accessibility and responsiveness

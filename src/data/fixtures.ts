@@ -1,4 +1,7 @@
 import type { WorkflowIntake } from "../types";
+import assignmentRedesignFixture from "../../examples/assignment-redesign-intake.json";
+
+export const assignmentRedesignIntake = assignmentRedesignFixture as WorkflowIntake;
 
 export const lectureIntake: WorkflowIntake = {
   workflowName: "Prepare a weekly lecture",
@@ -50,11 +53,36 @@ export const studentIntake: WorkflowIntake = {
   desiredImprovement: "One consistent weekly planning ritual with a recovery process",
 };
 
+export const courseMaterialsIntake: WorkflowIntake = {
+  workflowName: "Organize course materials for a teaching week",
+  userRole: "University professor",
+  objective: "Create one consistent, findable set of current teaching materials ready to use and publish",
+  trigger: "At the start of each teaching week or when new material arrives",
+  frequency: "Weekly",
+  currentTimeMinutes: 90,
+  tools: ["Google Drive", "Learning management system", "PowerPoint"],
+  inputs: ["Course syllabus", "Current slides", "Readings", "Activities", "Prior-week materials"],
+  desiredOutputs: ["Named weekly teaching folder", "Current-material manifest", "Publish-ready teaching set", "Final review checklist"],
+  currentSteps: [
+    { id: "c1", order: 1, description: "Search across folders and the learning system for current materials", tool: "Google Drive and learning management system", inputs: ["Course syllabus", "Prior-week materials", "Current readings and slides"], output: "Collected candidate materials", estimatedMinutes: 25, painPoints: ["Current and outdated files are mixed together"], decisionsRequired: [], repeated: true, humanReviewMandatory: false },
+    { id: "c2", order: 2, description: "Decide which files are current, required, or ready to archive", tool: "Google Drive", inputs: ["Collected candidate materials", "Course syllabus"], output: "Current-material manifest", estimatedMinutes: 20, painPoints: ["Version decisions are made from memory"], decisionsRequired: ["Which material is academically current"], repeated: true, humanReviewMandatory: true },
+    { id: "c3", order: 3, description: "Rename and place files into the weekly teaching structure", tool: "Google Drive", inputs: ["Current-material manifest", "Collected candidate materials"], output: "Named weekly teaching folder", estimatedMinutes: 25, painPoints: ["Naming and locations change from week to week"], decisionsRequired: [], repeated: true, humanReviewMandatory: false },
+    { id: "c4", order: 4, description: "Check the teaching set and publish the approved links", tool: "Google Drive and learning management system", inputs: ["Named weekly teaching folder", "Current-material manifest"], output: "Professor-approved publish-ready teaching set", estimatedMinutes: 20, painPoints: ["Missing or outdated links are found too late"], decisionsRequired: ["Final academic and publication approval"], repeated: true, humanReviewMandatory: true },
+  ],
+  majorFrustrations: ["Searching across inconsistent folders", "Distinguishing current files from old versions", "Rechecking links before class"],
+  repeatedActions: ["Searching for files", "Renaming documents", "Checking that links point to current material"],
+  humanJudgmentRequired: ["Academic currency", "Student-level suitability", "Final publication approval"],
+  sensitiveInformation: "Do not include identifiable student work, grades, accommodations, or restricted course materials in unapproved tools.",
+  successDefinition: "Open one weekly folder and find the approved teaching set without searching across old versions",
+  desiredImprovement: "A repeatable weekly structure with clear version decisions and a final publication check",
+};
+
 export const workflowCards = [
   { title: "Lecture preparation", audience: "Professor", ready: true, description: "Turn scattered source material into a reviewed teaching package." },
+  { title: "Assignment redesign for AI", audience: "Professor", ready: true, description: "Align instructions, AI-use boundaries, process evidence, and the rubric." },
+  { title: "Course material organization", audience: "Professor", ready: true, description: "Create one findable, publish-ready weekly teaching set." },
   { title: "Weekly academic planning", audience: "Student", ready: true, description: "Collect commitments and create a realistic, recoverable week." },
   { title: "Research project organization", audience: "Both", ready: false, description: "Connect questions, evidence, decisions, and next actions." },
   { title: "Meeting preparation", audience: "Both", ready: false, description: "Prepare context, decisions, notes, and follow-ups." },
   { title: "Assignment feedback", audience: "Professor", ready: false, description: "Structure feedback while preserving instructor judgment." },
-  { title: "Course material organization", audience: "Professor", ready: false, description: "Create a repeatable structure for teaching files." },
 ];

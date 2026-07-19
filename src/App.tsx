@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
-import { ArrowRight, BookOpen, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3, Download, FileCheck2, Gauge, GraduationCap, Menu, MoveDown, MoveUp, Plus, RefreshCw, ShieldCheck, Sparkles, Trash2, Workflow, X } from "lucide-react";
-import { lectureIntake, studentIntake, workflowCards } from "./data/fixtures";
+import { ArrowRight, BookOpen, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3, Download, FileCheck2, Gauge, GraduationCap, Layers3, Menu, MoveDown, MoveUp, Plus, RefreshCw, ShieldCheck, Sparkles, Trash2, Workflow, X } from "lucide-react";
+import { assignmentRedesignIntake, courseMaterialsIntake, lectureIntake, studentIntake, workflowCards } from "./data/fixtures";
 import { product } from "./config";
 import { generatePackage } from "./engine/generator";
 import { approveWorkflowRevision, draftWorkflowRevision, validateWorkflowFeedback } from "./revision";
@@ -16,6 +16,15 @@ const labels: Record<Route, string> = { "/": "Home", "/how-it-works": "How it wo
 const emptyStep = (order = 1): WorkflowStep => ({ id: crypto.randomUUID(), order, description: "", tool: "", inputs: [], output: "", estimatedMinutes: 15, painPoints: [], decisionsRequired: [], repeated: true, humanReviewMandatory: false });
 const initialIntake: WorkflowIntake = { workflowName: "", userRole: "", objective: "", trigger: "", frequency: "Weekly", currentTimeMinutes: 60, tools: [], inputs: [], desiredOutputs: [], currentSteps: [emptyStep()], majorFrustrations: [], repeatedActions: [], humanJudgmentRequired: [], sensitiveInformation: "", successDefinition: "", desiredImprovement: "" };
 const starterKey = "workflow-lab-starter";
+const quickStartKey = "workflow-lab-quick-start";
+
+function openStarter(go: (to: Route) => void, template: WorkflowIntake, quickStart: boolean) {
+  try {
+    sessionStorage.setItem(starterKey, JSON.stringify(template));
+    quickStart ? sessionStorage.setItem(quickStartKey, "true") : sessionStorage.removeItem(quickStartKey);
+  } catch { /* The intake can still start without a stored preset. */ }
+  go("/intake");
+}
 
 function useRoute() {
   const read = () => routeFromPathname(location.pathname, import.meta.env.BASE_URL, routes);
@@ -35,7 +44,7 @@ function Header({ route, go }: { route: Route; go: (to: Route) => void }) {
     <button className="brand" onClick={() => go("/")} aria-label={`${product.name} home`}><span className="brand-mark"><Workflow size={20} /></span><span>{product.name}</span></button>
     <nav className={open ? "nav-links open" : "nav-links"} aria-label="Main navigation">
       {["/how-it-works", "/sample-result"].map((item) => <button key={item} className={route === item ? "active" : ""} onClick={() => { go(item as Route); setOpen(false); }}>{labels[item as Route]}</button>)}
-      <button className="nav-cta" onClick={() => { go("/intake"); setOpen(false); }}>{product.primaryAction} <ArrowRight size={15} /></button>
+      <button className="nav-cta" onClick={() => { go("/"); setOpen(false); }}>{product.primaryAction} <ArrowRight size={15} /></button>
     </nav>
     <button className="menu-button" aria-label="Toggle navigation" onClick={() => setOpen(!open)}>{open ? <X /> : <Menu />}</button>
   </div></header>;
@@ -59,31 +68,29 @@ function Transformation({ compact = false }: { compact?: boolean }) {
 
 function Home({ go }: { go: (to: Route) => void }) {
   const hasDraft = useMemo(() => { try { return Boolean(localStorage.getItem("workflow-lab-intake")); } catch { return false; } }, []);
-  const start = (template: WorkflowIntake) => {
-    try { sessionStorage.setItem(starterKey, JSON.stringify(template)); } catch { /* The intake can still start without a stored preset. */ }
-    go("/intake");
-  };
   const starters = [
-    { title: "Prepare a lecture", copy: "Start with example answers, then make them yours.", icon: BookOpen, template: { ...lectureIntake, userRole: "Professor" } },
-    { title: "Plan my academic week", copy: "Use a ready-to-edit weekly planning example.", icon: CalendarDays, template: { ...studentIntake, userRole: "Student" } },
-    { title: "Something else", copy: "Start with a blank, guided workflow.", icon: Sparkles, template: { ...initialIntake, currentSteps: [emptyStep()] } },
+    { title: "Prepare a weekly lecture", copy: "Turn sources into a reviewed teaching package.", icon: BookOpen, template: { ...lectureIntake, userRole: "Professor" } },
+    { title: "Update an assignment for AI", copy: "Align instructions, policy boundaries, and the rubric.", icon: FileCheck2, template: { ...assignmentRedesignIntake, userRole: "Professor" } },
+    { title: "Organize course materials", copy: "Create one findable, publish-ready weekly teaching set.", icon: Layers3, template: { ...courseMaterialsIntake, userRole: "Professor" } },
   ];
   return <main className="simple-home">
     <section className="simple-hero">
       <span className="simple-kicker">Workflow Lab</span>
-      <h1>Make one recurring task easier.</h1>
-      <p>Choose a starting point. Tell us how you work now. Get a clearer workflow you can try today.</p>
+      <h1>Start with what already works.</h1>
+      <p>Choose a common improvement and get a ready-made workflow. Customize only when you need something different.</p>
       <div className="starter-panel" aria-labelledby="starter-heading">
-        <div className="starter-heading"><span>Start here</span><h2 id="starter-heading">What would you like to improve?</h2></div>
-        <div className="starter-grid">{starters.map(({ title, copy, icon: Icon, template }) => <button key={title} className="starter-card" onClick={() => start(template)}><span className="starter-icon"><Icon /></span><span><b>{title}</b><small>{copy}</small></span><ChevronRight /></button>)}</div>
+        <div className="starter-heading"><span>Ready-made options</span><h2 id="starter-heading">Choose an improvement.</h2></div>
+        <div className="starter-grid">{starters.map(({ title, copy, icon: Icon, template }) => <button key={title} className="starter-card" onClick={() => openStarter(go, template, true)}><span className="starter-icon"><Icon /></span><span><b>{title}</b><small>{copy}</small></span><ChevronRight /></button>)}</div>
+        <div className="custom-divider"><span>Need something else?</span></div>
+        <button className="custom-starter" onClick={() => openStarter(go, { ...initialIntake, currentSteps: [emptyStep()] }, false)}><span><Sparkles/><span><b>Build a custom workflow</b><small>Use the detailed guided setup for a different process.</small></span></span><ArrowRight /></button>
         {hasDraft && <button className="continue-draft" onClick={() => go("/intake")}><RefreshCw /> Continue my saved draft <ArrowRight /></button>}
       </div>
       <button className="example-link" onClick={() => go("/sample-result")}>See a finished example <ArrowRight /></button>
     </section>
     <section className="simple-steps" aria-label="How Workflow Lab works">
-      <article><span>1</span><h2>Describe it</h2><p>Walk through what you actually do—not the ideal version.</p></article>
-      <article><span>2</span><h2>Get a workflow</h2><p>Receive clear steps, reusable assets, and human review points.</p></article>
-      <article><span>3</span><h2>Try and improve it</h2><p>Run it once, report what failed, and approve any correction.</p></article>
+      <article><span>1</span><h2>Pick</h2><p>Choose the common improvement closest to what you need.</p></article>
+      <article><span>2</span><h2>Use</h2><p>Create the ready-made workflow immediately and try it once.</p></article>
+      <article><span>3</span><h2>Customize later</h2><p>Change details only when the default does not fit your work.</p></article>
     </section>
     <section className="simple-trust"><ShieldCheck /><div><h2>Your work stays yours.</h2><p>This prototype runs in your browser. Don’t enter confidential or identifiable student information.</p></div></section>
   </main>;
@@ -101,7 +108,8 @@ function HowItWorks({ go }: { go: (to: Route) => void }) {
 }
 
 function Workflows({ go }: { go: (to: Route) => void }) {
-  return <main><section className="page-hero"><span className="eyebrow">Workflow library</span><h1>Start with a task you already repeat.</h1><p>Two workflows are developed for the prototype. The rest show where the same method could go next.</p></section><section className="section workflow-library">{workflowCards.map((card, i) => <article key={card.title} className={!card.ready ? "concept" : ""}><div className="library-top"><span className="audience-pill">{card.audience}</span><span className={card.ready ? "status ready" : "status"}>{card.ready ? "Prototype ready" : "Future concept"}</span></div><div className="library-icon">{i === 0 ? <BookOpen /> : i === 1 ? <CalendarDays /> : <Workflow />}</div><h2>{card.title}</h2><p>{card.description}</p>{card.ready && <button onClick={() => go(i === 0 ? "/sample-result" : "/demo")}>View workflow <ArrowRight /></button>}</article>)}</section></main>;
+  const templates: Record<string, WorkflowIntake> = { "Lecture preparation": { ...lectureIntake, userRole: "Professor" }, "Assignment redesign for AI": { ...assignmentRedesignIntake, userRole: "Professor" }, "Course material organization": { ...courseMaterialsIntake, userRole: "Professor" }, "Weekly academic planning": { ...studentIntake, userRole: "Student" } };
+  return <main><section className="page-hero"><span className="eyebrow">Workflow library</span><h1>Start with a task you already repeat.</h1><p>Ready-made workflows can be used immediately. Future concepts remain unavailable until their default package is tested.</p></section><section className="section workflow-library">{workflowCards.map((card) => <article key={card.title} className={!card.ready ? "concept" : ""}><div className="library-top"><span className="audience-pill">{card.audience}</span><span className={card.ready ? "status ready" : "status"}>{card.ready ? "Ready-made" : "Future concept"}</span></div><div className="library-icon">{card.title === "Lecture preparation" ? <BookOpen /> : card.title === "Assignment redesign for AI" ? <FileCheck2 /> : card.title === "Course material organization" ? <Layers3 /> : card.title === "Weekly academic planning" ? <CalendarDays /> : <Workflow />}</div><h2>{card.title}</h2><p>{card.description}</p>{card.ready && <button onClick={() => openStarter(go, templates[card.title], true)}>Use workflow <ArrowRight /></button>}</article>)}</section></main>;
 }
 
 function Demo({ go }: { go: (to: Route) => void }) {
@@ -143,19 +151,37 @@ function readStoredIntake(): WorkflowIntake {
   }
 }
 
+function readQuickStart(): boolean {
+  try {
+    const quickStart = sessionStorage.getItem(quickStartKey) === "true";
+    sessionStorage.removeItem(quickStartKey);
+    return quickStart;
+  } catch {
+    return false;
+  }
+}
+
 function Intake({ go }: { go: (to: Route) => void }) {
   const [data, setData] = useState<WorkflowIntake>(readStoredIntake);
-  const [stage, setStage] = useState(0); const [errors, setErrors] = useState<string[]>([]); const [generated, setGenerated] = useState<WorkflowPackage | null>(null); const [storageWarning, setStorageWarning] = useState("");
+  const [quickStart, setQuickStart] = useState(readQuickStart); const [stage, setStage] = useState(0); const [errors, setErrors] = useState<string[]>([]); const [generated, setGenerated] = useState<WorkflowPackage | null>(null); const [storageWarning, setStorageWarning] = useState("");
   useEffect(() => { try { localStorage.setItem("workflow-lab-intake", JSON.stringify(data)); setStorageWarning(""); } catch { setStorageWarning("This browser could not save the draft. You can still complete and download it during this session."); } }, [data]);
   const set = <K extends keyof WorkflowIntake>(key: K, value: WorkflowIntake[K]) => setData(d => ({ ...d, [key]: value }));
   const updateStep = (id: string, patch: Partial<WorkflowStep>) => setData(d => ({ ...d, currentSteps: d.currentSteps.map(s => s.id === id ? { ...s, ...patch } : s) }));
   const reorder = (index: number, direction: -1 | 1) => setData(d => ({ ...d, currentSteps: moveWorkflowStep(d.currentSteps, index, direction) }));
   const nextStage = () => { const nextErrors = validateIntakeStage(data, stage); setErrors(nextErrors); if (!nextErrors.length) { setStage(stage + 1); scrollTo({ top: 0, behavior: "smooth" }); } };
-  const submit = (event: FormEvent) => { event.preventDefault(); const check = validateIntake(data); setErrors(check.errors); if (check.valid) { try { localStorage.setItem("workflow-lab-intake", JSON.stringify(data)); } catch { setStorageWarning("This browser could not save the draft. Download the JSON now to keep a copy."); } try { setGenerated(generatePackage(data)); } catch (error) { setErrors(error instanceof Error ? error.message.split("\n") : ["The workflow package could not be generated."]); } } };
+  const createPackage = () => { const check = validateIntake(data); setErrors(check.errors); if (check.valid) { try { localStorage.setItem("workflow-lab-intake", JSON.stringify(data)); } catch { setStorageWarning("This browser could not save the draft. Download the JSON now to keep a copy."); } try { setGenerated(generatePackage(data)); setQuickStart(false); } catch (error) { setErrors(error instanceof Error ? error.message.split("\n") : ["The workflow package could not be generated."]); } } };
+  const submit = (event: FormEvent) => { event.preventDefault(); createPackage(); };
   const downloadFile = (contents: string, filename: string) => { const blob = new Blob([contents], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url); };
   const downloadIntake = () => downloadFile(serializeIntake(data), intakeDownloadName(data.workflowName));
   const downloadPackage = () => generated && downloadFile(serializeWorkflowPackage(generated), workflowPackageDownloadName(data.workflowName));
-  if (generated) return <main className="result-page generated-result"><section className="result-hero"><div><span className="eyebrow">Workflow package ready</span><h1>{generated.metadata.workflowName}</h1><p>Your diagnosis, redesigned sequence, reusable assets, review points, and first-run measurement plan were generated in this browser.</p></div><div className="generated-actions"><button className="button primary" onClick={downloadPackage}><Download/> Download package</button><button className="button secondary" onClick={downloadIntake}>Download intake</button></div></section>{storageWarning && <div className="form-errors generated-warning" role="alert"><span>{storageWarning}</span></div>}<div className="local-generation-note"><ShieldCheck/><div><b>Local prototype generation</b><p>No information was sent to a server or AI provider. The package contains AI-assisted instructions for optional use in an institution-approved tool; every AI draft requires human review.</p></div></div><section className="section generated-overview"><DemoResult pkg={generated}/></section><section className="section result-content generated-detail"><RedesignTab pkg={generated}/></section><section className="section result-content generated-detail tinted"><AssetsTab pkg={generated}/></section><section className="section result-content generated-detail"><MeasurementTab pkg={generated}/></section><CorrectionLoop pkg={generated} onApprove={setGenerated}/><section className="final-cta small"><h2>Test it on one real, low-risk run.</h2><p>Record actual time, corrections, usefulness, and any step that needs help before treating the package as proven.</p><button className="button secondary" onClick={() => { setGenerated(null); setStage(8); }}>Revise the intake</button></section></main>;
+  if (generated) return <main className="result-page generated-result"><section className="result-hero"><div><span className="eyebrow">Workflow package ready</span><h1>{generated.metadata.workflowName}</h1><p>Your diagnosis, redesigned sequence, reusable assets, review points, and first-run measurement plan were generated in this browser.</p></div><div className="generated-actions"><button className="button primary" onClick={downloadPackage}><Download/> Download package</button><button className="button secondary" onClick={downloadIntake}>Download intake</button></div></section>{storageWarning && <div className="form-errors generated-warning" role="alert"><span>{storageWarning}</span></div>}<div className="local-generation-note"><ShieldCheck/><div><b>Local prototype generation</b><p>No information was sent to a server or AI provider. The package contains AI-assisted instructions for optional use in an institution-approved tool; every AI draft requires human review.</p></div></div><section className="section generated-overview"><DemoResult pkg={generated}/></section><section className="section result-content generated-detail"><RedesignTab pkg={generated}/></section><section className="section result-content generated-detail tinted"><AssetsTab pkg={generated}/></section><section className="section result-content generated-detail"><MeasurementTab pkg={generated}/></section><CorrectionLoop pkg={generated} onApprove={setGenerated}/><section className="final-cta small"><h2>Test it on one real, low-risk run.</h2><p>Record actual time, corrections, usefulness, and any step that needs help before treating the package as proven.</p><button className="button secondary" onClick={() => { setGenerated(null); setStage(intakeStages.length - 1); }}>Revise the intake</button></section></main>;
+  if (quickStart) return <main className="quick-start-page"><section className="quick-start-shell">
+    <span className="eyebrow">Ready-made workflow</span><h1>{data.workflowName}</h1><p className="quick-lead">This common workflow is already filled in. Create it now, or customize the details only if the default does not fit.</p>
+    <div className="quick-summary"><div className="quick-metrics"><span><Clock3/><b>{data.currentTimeMinutes}</b><small>current minutes</small></span><span><Workflow/><b>{data.currentSteps.length}</b><small>current steps</small></span><span><FileCheck2/><b>{data.desiredOutputs.length}</b><small>included outputs</small></span></div><div className="quick-includes"><h2>What this option includes</h2><ul>{data.desiredOutputs.slice(0, 4).map((output) => <li key={output}><Check/>{output}</li>)}</ul></div></div>
+    {errors.length > 0 && <div className="form-errors" role="alert"><b>This preset needs attention:</b>{errors.map((error) => <span key={error}>{error}</span>)}</div>}
+    <div className="quick-actions"><button className="button primary" onClick={createPackage}>Use this workflow <ArrowRight/></button><button className="button secondary" onClick={() => { setErrors([]); setQuickStart(false); }}>Customize first</button><button className="button text" onClick={() => go("/")}><ChevronLeft/> Choose another</button></div>
+    <div className="privacy-note"><ShieldCheck/><p>The preset contains example process data only. Your changes stay in this browser. Don’t add confidential or identifiable student information.</p></div>
+  </section></main>;
   return <main><section className="intake-shell">
     <div className="intake-intro">
       <span className="eyebrow">Guided setup</span><h1>Build your workflow.</h1><p>One clear question at a time. You can change any answer before generating.</p>
