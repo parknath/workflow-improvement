@@ -13,7 +13,8 @@ The first public static prototype is complete against the 2026-07-15 handoff def
 - Professor lecture-preparation redesign with 11 executable steps and required reusable assets.
 - Student weekly-planning redesign with 10 executable steps and required reusable assets.
 - JSON plus nine-file Markdown package renderer and CLI.
-- Six-route responsive website with homepage, method, library, demo, nine-stage intake, and complete sample result.
+- Six-route responsive website with homepage, method, library, demo, six-step intake, and complete sample result.
+- A simplified first screen with three obvious starting choices, ready-to-edit lecture and weekly-planning examples, saved-draft continuation, and a six-step guided intake that validates each section before continuing.
 - Browser-only intake persistence, step editing/reordering/removal, validation, and JSON download.
 - End-to-end local intake-to-package generation with complete redesigned steps, reusable assets, measurement guidance, package download, and an explicit no-server/no-provider disclosure.
 - Session-only failure reporting with usefulness, time, correction count, failed step, failure type, and desired outcome.
@@ -30,7 +31,7 @@ The first public static prototype is complete against the 2026-07-15 handoff def
 
 ## Verification record
 
-- `pnpm test`: passed 19 tests covering valid/invalid intake, scoring bounds, reviewable AI assistance versus human-only decisions, elimination classification, both complete workflows, the assignment-redesign professor bundle, executable step fields, asset coverage, nine-file Markdown rendering, step add/reorder/remove behavior, valid intake/package JSON download serialization, complaint validation, isolated correction drafting, preserved safeguards, mandatory approval before replacement, and deployment-aware route mapping.
+- `pnpm test`: passed 20 tests covering valid/invalid intake, per-section guided validation, scoring bounds, reviewable AI assistance versus human-only decisions, elimination classification, both complete workflows, the assignment-redesign professor bundle, executable step fields, asset coverage, nine-file Markdown rendering, step add/reorder/remove behavior, valid intake/package JSON download serialization, complaint validation, isolated correction drafting, preserved safeguards, mandatory approval before replacement, and deployment-aware route mapping.
 - `pnpm run typecheck`: passed with TypeScript strict mode.
 - `pnpm run build`: passed; Vite produced the production bundle.
 - `pnpm generate`: passed; generated professor JSON plus nine non-empty Markdown files.

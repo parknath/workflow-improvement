@@ -19,6 +19,15 @@ Open the local URL shown by Vite. The six routes are `/`, `/how-it-works`, `/wor
 
 Use the public prototype at [parknath.github.io/workflow-improvement](https://parknath.github.io/workflow-improvement/).
 
+To use it on yourself:
+
+1. Choose **Prepare a lecture** or **Plan my academic week** for ready-to-edit example answers, or **Something else** for a blank start.
+2. Replace the example with the task as you actually perform it. The guided setup checks each section before continuing.
+3. Create the package, download it, and try it on one real low-risk run.
+4. Record what failed in the result screen. Review any drafted correction before approving it.
+
+The prototype stores the draft in the current browser. Do not enter confidential or identifiable student information.
+
 The public GitHub Pages release is built and deployed from `main` by `.github/workflows/pages.yml`. The release workflow reruns the full product gate, builds with the `/workflow-improvement/` project base, adds static entries for every product route, and deploys the immutable commit through the `github-pages` environment.
 
 Build the Pages artifact locally:

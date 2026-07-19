@@ -3,7 +3,7 @@ import { lectureIntake, studentIntake } from "../data/fixtures";
 import { generatePackage } from "./generator";
 import { renderMarkdownFiles } from "./markdown";
 import { classifyStep, scoreStep } from "./scoring";
-import { validateIntake } from "./validation";
+import { validateIntake, validateIntakeStage } from "./validation";
 import { appendWorkflowStep, intakeDownloadName, moveWorkflowStep, removeWorkflowStep, serializeIntake, serializeWorkflowPackage, workflowPackageDownloadName } from "../intake";
 import assignmentRedesignIntake from "../../examples/assignment-redesign-intake.json";
 import type { WorkflowIntake } from "../types";
@@ -11,6 +11,11 @@ import type { WorkflowIntake } from "../types";
 describe("workflow engine", () => {
   it("validates the complete fixture", () => expect(validateIntake(lectureIntake).valid).toBe(true));
   it("rejects vague intake", () => expect(validateIntake({}).errors.length).toBeGreaterThan(3));
+  it("checks each guided intake step before moving on", () => {
+    expect(validateIntakeStage({}, 0)).toEqual(["User role is required.", "Workflow name is required.", "Objective is required."]);
+    expect(validateIntakeStage(lectureIntake, 0)).toEqual([]);
+    expect(validateIntakeStage(lectureIntake, 4)).toEqual([]);
+  });
   it("keeps scores within one to five", () => {
     Object.values(scoreStep(lectureIntake.currentSteps[0], 240)).forEach((score) => expect(score).toBeGreaterThanOrEqual(1));
     Object.values(scoreStep(lectureIntake.currentSteps[0], 240)).forEach((score) => expect(score).toBeLessThanOrEqual(5));

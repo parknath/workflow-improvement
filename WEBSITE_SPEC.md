@@ -10,7 +10,7 @@ The experience should feel like calm workflow consulting: warm neutral paper ton
 - `/how-it-works`: capture, diagnose, redesign, implement, and measure method plus classifications.
 - `/workflows`: six workflow cards; lecture preparation and weekly planning are complete.
 - `/demo`: role/workflow selector with fixture-generated baseline, bottlenecks, priorities, redesign, estimate, and review points.
-- `/intake`: nine-stage structured intake with browser storage, validation, and JSON download.
+- `/intake`: six-step guided intake with starter examples, browser storage, per-step validation, and JSON download.
 - `/sample-result`: complete professor result across overview, diagnosis, redesigned workflow, assets, and measurement.
 
 ## Accessibility and responsiveness
