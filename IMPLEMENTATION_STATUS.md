@@ -37,7 +37,7 @@ The first public static prototype is complete against the 2026-07-15 handoff def
 
 ## Verification record
 
-- `pnpm test`: passed 29 tests covering the prior engine, intake, revision, and routing contracts plus asset-to-step mapping, run start/complete/skip/back behavior, browser persistence and corrupt-state recovery, problem recording, first-run measurement, previous-version preservation, next-run baseline retention, and server-rendered overview/run/measurement/summary/revision states.
+- `pnpm test`: passed 30 tests covering the prior engine, intake, revision, and routing contracts plus asset-to-step mapping, run start/complete/skip/back behavior, browser persistence and corrupt-state recovery, problem recording, first-run measurement, previous-version preservation and retrieval, next-run baseline retention, and server-rendered overview/run/measurement/summary/revision states.
 - `pnpm run typecheck`: passed with TypeScript strict mode.
 - `pnpm run build`: passed; Vite produced the production bundle.
 - `pnpm generate`: passed; generated professor JSON plus nine non-empty Markdown files.

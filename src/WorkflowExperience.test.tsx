@@ -2,9 +2,9 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { lectureIntake } from "./data/fixtures";
 import { generatePackage } from "./engine/generator";
-import { draftWorkflowRevision } from "./revision";
+import { approveWorkflowRevision, draftWorkflowRevision } from "./revision";
 import { GeneratedWorkflowExperience } from "./WorkflowExperience";
-import { completeFirstRunMeasurement, createWorkflowWorkspace, endWorkflowRun, startWorkflowRun, updateRunMeasurement } from "./workflowRun";
+import { applyApprovedPackage, completeFirstRunMeasurement, createWorkflowWorkspace, endWorkflowRun, startWorkflowRun, updateRunMeasurement } from "./workflowRun";
 import type { WorkflowFeedback, WorkflowWorkspace } from "./types";
 
 const render = (workspace: WorkflowWorkspace) => renderToStaticMarkup(<GeneratedWorkflowExperience
@@ -56,5 +56,14 @@ describe("guided workflow experience", () => {
     expect(html).toContain("Active v0.1 remains unchanged");
     expect(html).toContain("DRAFT REVISION 0.2");
     expect(html).toContain("Approve and make active");
+  });
+
+  it("makes the immediately previous approved version retrievable", () => {
+    const workspace = createWorkflowWorkspace(generatePackage(lectureIntake));
+    const feedback: WorkflowFeedback = { failedStepOrder: 1, category: "clarity", expectedOutcome: "A named session workspace", actualOutcome: "The folder name was inconsistent", fitReason: "The naming rule was not specific enough", report: "The step left the folder naming pattern open to interpretation.", desiredOutcome: "", usefulnessRating: 3, actualTimeMinutes: 9, correctionCount: 1 };
+    const approved = approveWorkflowRevision(draftWorkflowRevision(workspace.activePackage, feedback));
+    const html = render(applyApprovedPackage(workspace, approved.package));
+    expect(html).toContain("Previous v0.1 is retained");
+    expect(html).toContain("Download previous v0.1");
   });
 });

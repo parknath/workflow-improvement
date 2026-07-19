@@ -24,6 +24,7 @@ try {
     "Report a problem",
     "First-run measurement",
     "Approve and make active",
+    "Download previous v",
     "workflow-lab-active-workflow",
     "does not operate external tools",
   ];
