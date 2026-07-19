@@ -13,6 +13,7 @@ const recommendations: Record<DiagnosedStep["classification"], string> = {
 };
 
 type StepBlueprint = Omit<ImprovedStep, "order">;
+type RawWorkflowAsset = Omit<WorkflowAsset, "stepOrders" | "purpose" | "humanVerification" | "prohibitedUse">;
 
 const lectureBlueprints: StepBlueprint[] = [
   ["Create a standardized session workspace", "Course code, week, and session topic", "Create the session folder from the standard structure and apply the naming rule.", "Google Drive", "Named session workspace", "None; this is a rule-based setup step.", "Confirm the course, week, and access permissions.", 5, "Stop if the session identity or approved storage location is unclear.", "STANDARDIZE"],
@@ -76,8 +77,8 @@ function redesignedWorkflow(intake: WorkflowIntake, diagnosis: DiagnosedStep[]):
   return blueprints ? blueprints.map((step, index) => ({ ...step, order: index + 1 })) : improve(diagnosis);
 }
 
-function assets(intake: WorkflowIntake): WorkflowAsset[] {
-  const generic: WorkflowAsset[] = [
+function rawAssets(intake: WorkflowIntake): RawWorkflowAsset[] {
+  const generic: RawWorkflowAsset[] = [
     { name: "Workflow kickoff", kind: "template", content: `Objective: ${intake.objective}\nInputs ready:\nDecisions needed:\nDefinition of done: ${intake.successDefinition}` },
     { name: "AI first-pass instruction", kind: "prompt", content: `Help me complete one step in ${intake.workflowName}. Use only the supplied material. State assumptions, flag missing information, and do not invent facts. Return a structured draft for human review.` },
     { name: "Final quality review", kind: "checklist", content: `- The objective is satisfied\n- Claims and calculations are verified\n- Sensitive information was handled appropriately\n- Required human decisions were made\n- Outputs are saved in the agreed location` },
@@ -114,6 +115,59 @@ function assets(intake: WorkflowIntake): WorkflowAsset[] {
   return generic;
 }
 
+const namedAssetSteps: Record<string, number[]> = {
+  "Session folder structure": [1],
+  "Learning-objective template": [3],
+  "Lecture brief template": [4],
+  "Slide-planning template": [6],
+  "Class-activity template": [7],
+  "Student-level adaptation": [8],
+  "Academic review": [9],
+  "Post-class reflection": [11],
+  "Lecture-brief instruction": [4],
+  "Weekly intake": [1],
+  "Assignment decomposition": [3],
+  "Effort estimation": [4],
+  "Priority framework": [6],
+  "Weekly plan": [7],
+  "Daily kickoff": [8],
+  "Missed-task recovery": [9],
+  "End-of-week review": [10],
+  "Weekly plan quality review": [7, 10],
+  "Planning first-pass instruction": [7],
+};
+
+function assets(intake: WorkflowIntake, steps: ImprovedStep[]): WorkflowAsset[] {
+  const firstOrder = steps[0]?.order ?? 1;
+  const lastOrder = steps.at(-1)?.order ?? firstOrder;
+  const firstAssisted = steps.find((step) => step.classification === "AI_ASSIST")?.order ?? firstOrder;
+  const firstHumanDecision = steps.find((step) => step.classification === "HUMAN_ONLY")?.order ?? lastOrder;
+  const genericMappings: Record<string, number[]> = {
+    "Workflow kickoff": [firstOrder],
+    "AI first-pass instruction": [firstAssisted],
+    "Final quality review": [lastOrder],
+    "Approved-tool and data-boundary preflight": [firstOrder],
+    "Academic decision record": [firstHumanDecision],
+    "Run evidence log": [lastOrder],
+  };
+  return rawAssets(intake).map((asset) => {
+    const stepOrders = (namedAssetSteps[asset.name] ?? genericMappings[asset.name] ?? [firstOrder])
+      .filter((order) => steps.some((step) => step.order === order));
+    const purpose = asset.kind === "prompt"
+      ? "Create a bounded first draft without surrendering the professor's judgment."
+      : asset.kind === "checklist"
+        ? "Make the required review visible and repeatable before continuing."
+        : "Give this workflow step a reusable starting structure instead of beginning from scratch.";
+    const humanVerification = asset.kind === "prompt"
+      ? "A person must verify the draft against approved inputs before using it."
+      : "A person confirms the completed asset is accurate, permitted, and fit for this workflow.";
+    const prohibitedUse = asset.kind === "prompt"
+      ? "Do not include confidential or identifiable student information, invent evidence, or treat the draft as approved academic work."
+      : "Do not use this asset to bypass institutional policy, required review, or accountable academic decisions.";
+    return { ...asset, stepOrders, purpose, humanVerification, prohibitedUse };
+  });
+}
+
 export function generatePackage(intake: WorkflowIntake): WorkflowPackage {
   const validation = validateIntake(intake);
   if (!validation.valid) throw new Error(validation.errors.join("\n"));
@@ -126,7 +180,7 @@ export function generatePackage(intake: WorkflowIntake): WorkflowPackage {
     metadata: { workflowName: intake.workflowName, userRole: intake.userRole, objective: intake.objective, frequency: intake.frequency },
     summary: `${intake.workflowName} is slowed mainly by ${priorityImprovements.map((item) => item.description.toLowerCase()).join(", ")}. The redesign adds repeatable structure while preserving human judgment.`,
     baseline: { estimatedTimeMinutes: intake.currentTimeMinutes, numberOfSteps: intake.currentSteps.length, majorBottlenecks: priorityImprovements.length },
-    diagnosis, priorityImprovements, improvedWorkflow, assets: assets(intake),
+    diagnosis, priorityImprovements, improvedWorkflow, assets: assets(intake, improvedWorkflow),
     exampleExecution: {
       scenario: /lecture/i.test(intake.workflowName)
         ? "Prepare the next first-year lecture using approved syllabus outcomes and one textbook chapter."
@@ -158,6 +212,7 @@ export function generatePackage(intake: WorkflowIntake): WorkflowPackage {
     riskNotes: [
       "Review AI-assisted output for accuracy before use.",
       intake.sensitiveInformation || "Do not enter personal, confidential, or institution-restricted information into unapproved AI tools.",
+      "Workflow Lab guides the sequence but does not operate external tools or make accountable academic decisions.",
     ],
     measurement: {
       baselineTimeMinutes: intake.currentTimeMinutes,

@@ -37,3 +37,4 @@ Choose one: reschedule with a buffer; reduce scope within requirements; ask for 
 
 - Review AI-assisted output for accuracy before use.
 - Do not include private health, disability, or account information in unapproved AI tools.
+- Workflow Lab guides the sequence but does not operate external tools or make accountable academic decisions.

@@ -24,3 +24,4 @@ Version 0.1
 
 - Review AI-assisted output for accuracy before use.
 - Do not include student records or identifiable student work in external AI tools.
+- Workflow Lab guides the sequence but does not operate external tools or make accountable academic decisions.

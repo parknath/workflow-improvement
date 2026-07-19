@@ -70,6 +70,10 @@ export interface WorkflowAsset {
   name: string;
   kind: "prompt" | "template" | "checklist";
   content: string;
+  stepOrders: number[];
+  purpose: string;
+  humanVerification: string;
+  prohibitedUse: string;
 }
 
 export interface WorkflowPackage {
@@ -104,6 +108,9 @@ export type FeedbackCategory = "accuracy" | "clarity" | "missing_input" | "tool_
 export interface WorkflowFeedback {
   failedStepOrder: number;
   category: FeedbackCategory;
+  expectedOutcome: string;
+  actualOutcome: string;
+  fitReason: string;
   report: string;
   desiredOutcome: string;
   usefulnessRating: number;
@@ -134,4 +141,55 @@ export interface ApprovedWorkflowRevision {
   status: "approved";
   approvedAt: string;
   package: WorkflowPackage;
+}
+
+export type WorkflowRunStatus = "running" | "measuring" | "completed";
+export type ReuseIntent = "" | "yes" | "maybe" | "no";
+
+export interface FirstRunMeasurement {
+  taskCompleted: boolean | null;
+  actualTotalMinutes: number | null;
+  usefulnessRating: number;
+  correctionCount: number;
+  mostUsefulAsset: string;
+  leastUsefulStepOrder: number | null;
+  reuseIntent: ReuseIntent;
+  nextChange: string;
+}
+
+export interface ReportedWorkflowProblem extends WorkflowFeedback {
+  id: string;
+  reportedAt: string;
+}
+
+export interface WorkflowRunState {
+  id: string;
+  workflowVersion: string;
+  status: WorkflowRunStatus;
+  currentStepOrder: number;
+  completedStepOrders: number[];
+  skippedStepOrders: number[];
+  startedAt: string;
+  endedAt: string | null;
+  problems: ReportedWorkflowProblem[];
+  measurement: FirstRunMeasurement;
+}
+
+export interface WorkflowRunSummary extends FirstRunMeasurement {
+  runId: string;
+  workflowName: string;
+  workflowVersion: string;
+  startedAt: string;
+  completedAt: string;
+  completedStepOrders: number[];
+  skippedStepOrders: number[];
+  problemsReported: number;
+}
+
+export interface WorkflowWorkspace {
+  activePackage: WorkflowPackage;
+  previousPackage: WorkflowPackage | null;
+  currentRun: WorkflowRunState | null;
+  lastRunSummary: WorkflowRunSummary | null;
+  pendingRevision: WorkflowRevisionDraft | null;
 }

@@ -12,19 +12,21 @@ Workflow Lab helps a professor or student make one recurring task clearer, faste
 ## Experience
 
 1. Choose one recurring workflow.
-2. Describe the current process through structured intake.
+2. Accept a recommended preset or describe the current process through optional structured intake.
 3. Map and score each current step.
 4. Identify bottlenecks, repeated work, risk, and judgment.
 5. Generate an improved operating sequence and reusable assets.
 6. Require named human review where accuracy, privacy, or responsibility matters.
-7. Test the package on real work and compare actual results with the baseline.
-8. Report a step that failed, including usefulness, actual time, corrections, and the needed outcome.
-9. Draft a correction for review while the approved package remains active.
-10. Replace the active package only after explicit human approval.
+7. Start the active workflow and follow one step at a time with relevant reusable assets in context.
+8. Complete, skip, revisit, or report a step that did not fit while progress remains in the current browser.
+9. Record a measured run result and use it as the comparison baseline for the next run.
+10. Draft one correction for review while the active workflow remains unchanged.
+11. Replace the active workflow only after explicit human approval and retain the immediately previous version locally.
+12. Run the workflow again to test whether the approved revision improves a comparable recurring task.
 
-## Workflow Package
+## Active workflow
 
-The engine produces a current map, baseline, diagnosis, priorities, executable redesign, AI instructions, templates, checklists, safety notes, example execution, and measurement plan. Each redesigned step names its input, action, tool, output, AI involvement, human review, time estimate, and failure or escalation condition.
+The engine produces a current map, baseline, diagnosis, priorities, executable redesign, AI instructions, templates, checklists, safety notes, example execution, and measurement plan. Each redesigned step names its input, action, tool, output, AI involvement, human review, time estimate, and failure or escalation condition. The browser experience turns this into an active, measurable workflow rather than leaving the user to interpret a static document.
 
 ## Product principles
 
@@ -33,5 +35,6 @@ The engine produces a current map, baseline, diagnosis, priorities, executable r
 - Keep accountable academic judgment with people.
 - Treat AI output as a reviewable draft.
 - Keep the last approved workflow active until a person approves a proposed correction.
+- Earn repeat use through a better measured next run, not by locking a static template behind a subscription.
 - Never promise estimated time savings.
 - Avoid identifiable student information in unapproved tools.

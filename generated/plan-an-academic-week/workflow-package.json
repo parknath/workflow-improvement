@@ -1,6 +1,6 @@
 {
   "version": "0.1",
-  "generatedAt": "2026-07-19T00:47:08.669Z",
+  "generatedAt": "2026-07-19T11:50:08.719Z",
   "metadata": {
     "workflowName": "Plan an academic week",
     "userRole": "University student",
@@ -360,52 +360,113 @@
     {
       "name": "Weekly intake",
       "kind": "template",
-      "content": "Week of:\nFixed commitments:\nOfficial deadlines with source links:\nUnfinished work:\nAvailable work blocks:"
+      "content": "Week of:\nFixed commitments:\nOfficial deadlines with source links:\nUnfinished work:\nAvailable work blocks:",
+      "stepOrders": [
+        1
+      ],
+      "purpose": "Give this workflow step a reusable starting structure instead of beginning from scratch.",
+      "humanVerification": "A person confirms the completed asset is accurate, permitted, and fit for this workflow.",
+      "prohibitedUse": "Do not use this asset to bypass institutional policy, required review, or accountable academic decisions."
     },
     {
       "name": "Assignment decomposition",
       "kind": "template",
-      "content": "Assignment:\nDefinition of done:\nRubric requirements:\nTasks (30–90 minutes each):\nDependencies:\nFirst visible action:"
+      "content": "Assignment:\nDefinition of done:\nRubric requirements:\nTasks (30–90 minutes each):\nDependencies:\nFirst visible action:",
+      "stepOrders": [
+        3
+      ],
+      "purpose": "Give this workflow step a reusable starting structure instead of beginning from scratch.",
+      "humanVerification": "A person confirms the completed asset is accurate, permitted, and fit for this workflow.",
+      "prohibitedUse": "Do not use this asset to bypass institutional policy, required review, or accountable academic decisions."
     },
     {
       "name": "Effort estimation",
       "kind": "template",
-      "content": "Task | Low estimate | Expected estimate | High estimate | Actual | Learning for next estimate"
+      "content": "Task | Low estimate | Expected estimate | High estimate | Actual | Learning for next estimate",
+      "stepOrders": [
+        4
+      ],
+      "purpose": "Give this workflow step a reusable starting structure instead of beginning from scratch.",
+      "humanVerification": "A person confirms the completed asset is accurate, permitted, and fit for this workflow.",
+      "prohibitedUse": "Do not use this asset to bypass institutional policy, required review, or accountable academic decisions."
     },
     {
       "name": "Priority framework",
       "kind": "checklist",
-      "content": "- Deadline risk\n- Academic importance\n- Dependency impact\n- Estimated effort\n- Consequence of delay"
+      "content": "- Deadline risk\n- Academic importance\n- Dependency impact\n- Estimated effort\n- Consequence of delay",
+      "stepOrders": [
+        6
+      ],
+      "purpose": "Make the required review visible and repeatable before continuing.",
+      "humanVerification": "A person confirms the completed asset is accurate, permitted, and fit for this workflow.",
+      "prohibitedUse": "Do not use this asset to bypass institutional policy, required review, or accountable academic decisions."
     },
     {
       "name": "Weekly plan",
       "kind": "template",
-      "content": "Day | Fixed commitments | Focus block | Buffer | Daily starting action"
+      "content": "Day | Fixed commitments | Focus block | Buffer | Daily starting action",
+      "stepOrders": [
+        7
+      ],
+      "purpose": "Give this workflow step a reusable starting structure instead of beginning from scratch.",
+      "humanVerification": "A person confirms the completed asset is accurate, permitted, and fit for this workflow.",
+      "prohibitedUse": "Do not use this asset to bypass institutional policy, required review, or accountable academic decisions."
     },
     {
       "name": "Daily kickoff",
       "kind": "checklist",
-      "content": "- Open the required source\n- Read the task definition\n- Start the named first action\n- Set the planned stop point\n- Record status before switching"
+      "content": "- Open the required source\n- Read the task definition\n- Start the named first action\n- Set the planned stop point\n- Record status before switching",
+      "stepOrders": [
+        8
+      ],
+      "purpose": "Make the required review visible and repeatable before continuing.",
+      "humanVerification": "A person confirms the completed asset is accurate, permitted, and fit for this workflow.",
+      "prohibitedUse": "Do not use this asset to bypass institutional policy, required review, or accountable academic decisions."
     },
     {
       "name": "Missed-task recovery",
       "kind": "checklist",
-      "content": "Choose one: reschedule with a buffer; reduce scope within requirements; ask for clarification; renegotiate when appropriate; remove obsolete work. Never silently overload the next day."
+      "content": "Choose one: reschedule with a buffer; reduce scope within requirements; ask for clarification; renegotiate when appropriate; remove obsolete work. Never silently overload the next day.",
+      "stepOrders": [
+        9
+      ],
+      "purpose": "Make the required review visible and repeatable before continuing.",
+      "humanVerification": "A person confirms the completed asset is accurate, permitted, and fit for this workflow.",
+      "prohibitedUse": "Do not use this asset to bypass institutional policy, required review, or accountable academic decisions."
     },
     {
       "name": "End-of-week review",
       "kind": "template",
-      "content": "Completed:\nUnfinished and why:\nActual vs expected effort:\nDeadline risks:\nOne planning change for next week:"
+      "content": "Completed:\nUnfinished and why:\nActual vs expected effort:\nDeadline risks:\nOne planning change for next week:",
+      "stepOrders": [
+        10
+      ],
+      "purpose": "Give this workflow step a reusable starting structure instead of beginning from scratch.",
+      "humanVerification": "A person confirms the completed asset is accurate, permitted, and fit for this workflow.",
+      "prohibitedUse": "Do not use this asset to bypass institutional policy, required review, or accountable academic decisions."
     },
     {
       "name": "Weekly plan quality review",
       "kind": "checklist",
-      "content": "- Every deadline traces to an official source\n- Large assignments have concrete next actions\n- Dependencies are scheduled first\n- Planned work fits available capacity\n- Buffers and recovery time are present\n- Private information is excluded from unapproved tools"
+      "content": "- Every deadline traces to an official source\n- Large assignments have concrete next actions\n- Dependencies are scheduled first\n- Planned work fits available capacity\n- Buffers and recovery time are present\n- Private information is excluded from unapproved tools",
+      "stepOrders": [
+        7,
+        10
+      ],
+      "purpose": "Make the required review visible and repeatable before continuing.",
+      "humanVerification": "A person confirms the completed asset is accurate, permitted, and fit for this workflow.",
+      "prohibitedUse": "Do not use this asset to bypass institutional policy, required review, or accountable academic decisions."
     },
     {
       "name": "Planning first-pass instruction",
       "kind": "prompt",
-      "content": "Using only the supplied assignment instructions, deadlines, fixed commitments, and available work blocks, draft a weekly plan. Show source dates, dependencies, effort ranges, buffers, and one daily starting action. Mark missing or conflicting information as [VERIFY]. Do not infer health, disability, or private circumstances. Return a draft for student review."
+      "content": "Using only the supplied assignment instructions, deadlines, fixed commitments, and available work blocks, draft a weekly plan. Show source dates, dependencies, effort ranges, buffers, and one daily starting action. Mark missing or conflicting information as [VERIFY]. Do not infer health, disability, or private circumstances. Return a draft for student review.",
+      "stepOrders": [
+        7
+      ],
+      "purpose": "Create a bounded first draft without surrendering the professor's judgment.",
+      "humanVerification": "A person must verify the draft against approved inputs before using it.",
+      "prohibitedUse": "Do not include confidential or identifiable student information, invent evidence, or treat the draft as approved academic work."
     }
   ],
   "exampleExecution": {
@@ -429,7 +490,8 @@
   },
   "riskNotes": [
     "Review AI-assisted output for accuracy before use.",
-    "Do not include private health, disability, or account information in unapproved AI tools."
+    "Do not include private health, disability, or account information in unapproved AI tools.",
+    "Workflow Lab guides the sequence but does not operate external tools or make accountable academic decisions."
   ],
   "measurement": {
     "baselineTimeMinutes": 100,

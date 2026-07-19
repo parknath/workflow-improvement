@@ -1,8 +1,8 @@
 # Workflow Lab
 
-Workflow Lab is a browser-based concierge-MVP prototype for improving one recurring workflow at a time. It maps the current process, diagnoses wasted effort and risk, proposes an executable redesign, and produces reusable templates, AI-assisted instructions, checkpoints, and a measurement plan.
+Workflow Lab is a browser-based concierge-MVP prototype for improving one recurring workflow at a time. It maps the current process, diagnoses wasted effort and risk, creates an executable redesign, and guides the user through each step with reusable templates, AI-assisted instructions, checkpoints, and first-run measurement.
 
-The first two complete workflows are professor lecture preparation and student weekly academic planning. Generic professor workflows also receive an approved-tool/data-boundary preflight, an academic decision record, and a run evidence log so a real pilot can preserve human authority and measure a second run. A user can complete the intake and immediately generate, inspect, and download their workflow package in the browser. After a real run, the user can report one failed step, record usefulness/time/corrections, review a locally drafted correction, and explicitly approve it before it replaces the active package. Generation and correction drafting are local and deterministic; the prototype does not call an AI provider or send intake or feedback data to a server.
+The first two complete workflows are professor lecture preparation and student weekly academic planning. Generic professor workflows also receive an approved-tool/data-boundary preflight, an academic decision record, and a run evidence log. A user can generate a ready-made workflow, start it immediately, complete or skip one step at a time, use assets in context, report a problem, approve or reject a local draft revision, and save a measured result as the baseline for the next run. The active workflow, in-progress run, last run summary, and immediately previous approved version stay in the current browser. Generation and correction drafting are local and deterministic; the prototype does not call an AI provider or send workflow or feedback data to a server.
 
 ## Run the website
 
@@ -23,9 +23,10 @@ To use it on yourself:
 
 1. Choose **Prepare a weekly lecture**, **Update an assignment for AI**, or **Organize course materials**.
 2. Review the short ready-made summary and select **Use this workflow**. No detailed intake is required.
-3. Download the package and try it on one real low-risk run.
-4. Use **Customize first** only when the default needs adjustment, or **Build a custom workflow** when none of the common options fits.
-5. Record what failed in the result screen. Review any drafted correction before approving it.
+3. Select **Start workflow** and follow one clear step at a time. Reusable assets appear in the steps where they are needed.
+4. Complete, skip, revisit, or report a problem with a step. The active version does not change until you approve a draft revision.
+5. Record actual time, usefulness, corrections, reuse intent, and the next change. Use that measured result as the baseline for a comparable next run.
+6. Use **Customize first** only when the default needs adjustment, or **Build a custom workflow** when none of the common options fits.
 
 The prototype stores the draft in the current browser. Do not enter confidential or identifiable student information.
 
@@ -70,8 +71,10 @@ pnpm verify
 
 - `src/data/fixtures.ts`: realistic ready-made workflow inputs and workflow-library cards.
 - `src/engine/`: validation, scoring, classification, generation, Markdown output, and CLI.
-- `src/revision.ts`: validated complaint-to-correction drafting and mandatory approval boundary.
-- `src/App.tsx`: route views, interactive demo, intake-to-package generation, and sample result.
+- `src/revision.ts`: validated problem-to-correction drafting and mandatory approval boundary.
+- `src/workflowRun.ts`: browser-local active workflow, run progress, measurement, previous-version, and summary behavior.
+- `src/WorkflowExperience.tsx`: action-first result, guided workflow run, contextual assets, measurement, and revision UI.
+- `src/App.tsx`: public routes, preset selection, detailed intake, interactive demo, and sample result.
 - `src/config.ts`: centralized working name and primary public copy.
 - `schemas/`: portable JSON Schema for exported intake data.
 - `examples/`: schema-valid intake JSON for lecture preparation, student planning, and the professor assignment-redesign pilot preflight.
@@ -84,4 +87,4 @@ See `PRODUCT_SPEC.md`, `MVP_SCOPE.md`, `TECHNICAL_SPEC.md`, `WEBSITE_SPEC.md`, `
 
 ## Current limits
 
-This is a public static prototype, not production software. It has no authentication, database, payments, external AI calls, analytics, integrations, permanent workflow history, durable complaint storage, or collaboration. Its correction draft is a transparent rule-based prototype of the future AI-assisted revision experience; feedback exists only in the current page session. Estimated time savings are hypotheses to test with real users, not promises.
+This is a public static prototype, not production software. It has no authentication, database, payments, external AI calls, analytics, integrations, cross-device history, durable server storage, or collaboration. Its correction draft is a transparent rule-based prototype of the future AI-assisted revision experience. Browser data can disappear when site data is cleared and should not contain confidential or identifiable student information. Estimated time savings and recurring value are hypotheses to test with comparable real runs, not promises.

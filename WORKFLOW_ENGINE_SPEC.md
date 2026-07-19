@@ -11,7 +11,7 @@ The engine accepts one workflow with name, role, objective, trigger, frequency, 
 3. Score each step from one to five for repetition, time cost, cognitive load, error risk, automation suitability, and human judgment.
 4. Assign one primary classification: `ELIMINATE`, `SIMPLIFY`, `STANDARDIZE`, `TEMPLATE`, `AUTOMATE`, `AI_ASSIST`, or `HUMAN_ONLY`. A mandatory human review is an approval boundary, not an automatic `HUMAN_ONLY` classification: a reviewable first draft may be `AI_ASSIST`, while multi-decision or high-judgment academic choices remain `HUMAN_ONLY`.
 5. Rank opportunities using expected gain reduced by error and judgment restraint.
-6. Generate an executable redesign, assets, review points, privacy notes, example execution, and measurement plan.
+6. Generate an executable redesign, step-linked assets with use/verification boundaries, review points, privacy notes, example execution, and measurement plan.
 7. Render the package as JSON and nine Markdown files.
 
 ## Guardrails
@@ -20,4 +20,4 @@ Technical automability alone never overrides risk or judgment. High-judgment ste
 
 ## Measurement
 
-The package reports the user-provided baseline and a clearly labeled prototype target. Real evaluation records actual step time, corrections, completion quality, user effort, and whether the workflow can be repeated without operator help.
+The workflow reports the user-provided baseline and a clearly labeled prototype target. A browser-local run records completed and skipped steps, problems, actual total time, corrections, usefulness, asset usefulness, weak steps, reuse intent, and one change for the next comparable run. A measured first run is a baseline, not proof of improvement.

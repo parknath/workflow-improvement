@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from "react";
-import { ArrowRight, BookOpen, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3, Download, FileCheck2, Gauge, GraduationCap, Layers3, Menu, MoveDown, MoveUp, Plus, RefreshCw, ShieldCheck, Sparkles, Trash2, Workflow, X } from "lucide-react";
+import { ArrowRight, BookOpen, CalendarDays, Check, ChevronLeft, ChevronRight, Clock3, Download, FileCheck2, Gauge, GraduationCap, Layers3, Menu, MoveDown, MoveUp, Play, Plus, RefreshCw, ShieldCheck, Sparkles, Trash2, Workflow, X } from "lucide-react";
 import { assignmentRedesignIntake, courseMaterialsIntake, lectureIntake, studentIntake, workflowCards } from "./data/fixtures";
 import { product } from "./config";
 import { generatePackage } from "./engine/generator";
-import { approveWorkflowRevision, draftWorkflowRevision, validateWorkflowFeedback } from "./revision";
 import { validateIntake, validateIntakeStage } from "./engine/validation";
 import { appendWorkflowStep, intakeDownloadName, moveWorkflowStep, removeWorkflowStep, serializeIntake, serializeWorkflowPackage, workflowPackageDownloadName } from "./intake";
 import { routeFromPathname, routeHref } from "./routing";
-import type { FeedbackCategory, WorkflowFeedback, WorkflowIntake, WorkflowPackage, WorkflowRevisionDraft, WorkflowStep } from "./types";
+import { createWorkflowWorkspace, loadWorkflowWorkspace, saveWorkflowWorkspace, WORKSPACE_STORAGE_KEY } from "./workflowRun";
+import { GeneratedWorkflowExperience } from "./WorkflowExperience";
+import type { WorkflowIntake, WorkflowPackage, WorkflowStep, WorkflowWorkspace } from "./types";
 
 type Route = "/" | "/how-it-works" | "/workflows" | "/demo" | "/intake" | "/sample-result";
 const routes: Route[] = ["/", "/how-it-works", "/workflows", "/demo", "/intake", "/sample-result"];
@@ -19,6 +20,7 @@ const starterKey = "workflow-lab-starter";
 const quickStartKey = "workflow-lab-quick-start";
 
 function openStarter(go: (to: Route) => void, template: WorkflowIntake, quickStart: boolean) {
+  try { localStorage.removeItem(WORKSPACE_STORAGE_KEY); } catch { /* A new preset can still open without storage. */ }
   try {
     sessionStorage.setItem(starterKey, JSON.stringify(template));
     quickStart ? sessionStorage.setItem(quickStartKey, "true") : sessionStorage.removeItem(quickStartKey);
@@ -68,6 +70,7 @@ function Transformation({ compact = false }: { compact?: boolean }) {
 
 function Home({ go }: { go: (to: Route) => void }) {
   const hasDraft = useMemo(() => { try { return Boolean(localStorage.getItem("workflow-lab-intake")); } catch { return false; } }, []);
+  const activeWorkspace = useMemo(() => { try { return loadWorkflowWorkspace(localStorage); } catch { return null; } }, []);
   const starters = [
     { title: "Prepare a weekly lecture", copy: "Turn sources into a reviewed teaching package.", icon: BookOpen, template: { ...lectureIntake, userRole: "Professor" } },
     { title: "Update an assignment for AI", copy: "Align instructions, policy boundaries, and the rubric.", icon: FileCheck2, template: { ...assignmentRedesignIntake, userRole: "Professor" } },
@@ -83,7 +86,8 @@ function Home({ go }: { go: (to: Route) => void }) {
         <div className="starter-grid">{starters.map(({ title, copy, icon: Icon, template }) => <button key={title} className="starter-card" onClick={() => openStarter(go, template, true)}><span className="starter-icon"><Icon /></span><span><b>{title}</b><small>{copy}</small></span><ChevronRight /></button>)}</div>
         <div className="custom-divider"><span>Need something else?</span></div>
         <button className="custom-starter" onClick={() => openStarter(go, { ...initialIntake, currentSteps: [emptyStep()] }, false)}><span><Sparkles/><span><b>Build a custom workflow</b><small>Use the detailed guided setup for a different process.</small></span></span><ArrowRight /></button>
-        {hasDraft && <button className="continue-draft" onClick={() => go("/intake")}><RefreshCw /> Continue my saved draft <ArrowRight /></button>}
+        {activeWorkspace && <button className="continue-draft active-workflow" onClick={() => go("/intake")}><Play /><span><b>Continue {activeWorkspace.activePackage.metadata.workflowName}</b><small>Active version {activeWorkspace.activePackage.version}{activeWorkspace.currentRun?.status === "running" ? ` · step ${activeWorkspace.currentRun.currentStepOrder}` : " · ready for the next run"}</small></span><ArrowRight /></button>}
+        {hasDraft && !activeWorkspace && <button className="continue-draft" onClick={() => go("/intake")}><RefreshCw /> Continue my saved draft <ArrowRight /></button>}
       </div>
       <button className="example-link" onClick={() => go("/sample-result")}>See a finished example <ArrowRight /></button>
     </section>
@@ -163,18 +167,30 @@ function readQuickStart(): boolean {
 
 function Intake({ go }: { go: (to: Route) => void }) {
   const [data, setData] = useState<WorkflowIntake>(readStoredIntake);
-  const [quickStart, setQuickStart] = useState(readQuickStart); const [stage, setStage] = useState(0); const [errors, setErrors] = useState<string[]>([]); const [generated, setGenerated] = useState<WorkflowPackage | null>(null); const [storageWarning, setStorageWarning] = useState("");
+  const [quickStart, setQuickStart] = useState(readQuickStart);
+  const [stage, setStage] = useState(0);
+  const [errors, setErrors] = useState<string[]>([]);
+  const [storageWarning, setStorageWarning] = useState("");
+  const [workspace, setWorkspace] = useState<WorkflowWorkspace | null>(() => {
+    if (quickStart) return null;
+    try { return loadWorkflowWorkspace(localStorage); } catch { return null; }
+  });
   useEffect(() => { try { localStorage.setItem("workflow-lab-intake", JSON.stringify(data)); setStorageWarning(""); } catch { setStorageWarning("This browser could not save the draft. You can still complete and download it during this session."); } }, [data]);
+  useEffect(() => {
+    if (!workspace) return;
+    try { saveWorkflowWorkspace(localStorage, workspace); setStorageWarning(""); }
+    catch { setStorageWarning("This browser could not save workflow progress. Keep this page open and download your results when finished."); }
+  }, [workspace]);
   const set = <K extends keyof WorkflowIntake>(key: K, value: WorkflowIntake[K]) => setData(d => ({ ...d, [key]: value }));
   const updateStep = (id: string, patch: Partial<WorkflowStep>) => setData(d => ({ ...d, currentSteps: d.currentSteps.map(s => s.id === id ? { ...s, ...patch } : s) }));
   const reorder = (index: number, direction: -1 | 1) => setData(d => ({ ...d, currentSteps: moveWorkflowStep(d.currentSteps, index, direction) }));
   const nextStage = () => { const nextErrors = validateIntakeStage(data, stage); setErrors(nextErrors); if (!nextErrors.length) { setStage(stage + 1); scrollTo({ top: 0, behavior: "smooth" }); } };
-  const createPackage = () => { const check = validateIntake(data); setErrors(check.errors); if (check.valid) { try { localStorage.setItem("workflow-lab-intake", JSON.stringify(data)); } catch { setStorageWarning("This browser could not save the draft. Download the JSON now to keep a copy."); } try { setGenerated(generatePackage(data)); setQuickStart(false); } catch (error) { setErrors(error instanceof Error ? error.message.split("\n") : ["The workflow package could not be generated."]); } } };
+  const createPackage = () => { const check = validateIntake(data); setErrors(check.errors); if (check.valid) { try { localStorage.setItem("workflow-lab-intake", JSON.stringify(data)); } catch { setStorageWarning("This browser could not save the draft. Download the JSON now to keep a copy."); } try { setWorkspace(createWorkflowWorkspace(generatePackage(data))); setQuickStart(false); } catch (error) { setErrors(error instanceof Error ? error.message.split("\n") : ["The workflow could not be generated."]); } } };
   const submit = (event: FormEvent) => { event.preventDefault(); createPackage(); };
   const downloadFile = (contents: string, filename: string) => { const blob = new Blob([contents], { type: "application/json" }); const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url); };
   const downloadIntake = () => downloadFile(serializeIntake(data), intakeDownloadName(data.workflowName));
-  const downloadPackage = () => generated && downloadFile(serializeWorkflowPackage(generated), workflowPackageDownloadName(data.workflowName));
-  if (generated) return <main className="result-page generated-result"><section className="result-hero"><div><span className="eyebrow">Workflow package ready</span><h1>{generated.metadata.workflowName}</h1><p>Your diagnosis, redesigned sequence, reusable assets, review points, and first-run measurement plan were generated in this browser.</p></div><div className="generated-actions"><button className="button primary" onClick={downloadPackage}><Download/> Download package</button><button className="button secondary" onClick={downloadIntake}>Download intake</button></div></section>{storageWarning && <div className="form-errors generated-warning" role="alert"><span>{storageWarning}</span></div>}<div className="local-generation-note"><ShieldCheck/><div><b>Local prototype generation</b><p>No information was sent to a server or AI provider. The package contains AI-assisted instructions for optional use in an institution-approved tool; every AI draft requires human review.</p></div></div><section className="section generated-overview"><DemoResult pkg={generated}/></section><section className="section result-content generated-detail"><RedesignTab pkg={generated}/></section><section className="section result-content generated-detail tinted"><AssetsTab pkg={generated}/></section><section className="section result-content generated-detail"><MeasurementTab pkg={generated}/></section><CorrectionLoop pkg={generated} onApprove={setGenerated}/><section className="final-cta small"><h2>Test it on one real, low-risk run.</h2><p>Record actual time, corrections, usefulness, and any step that needs help before treating the package as proven.</p><button className="button secondary" onClick={() => { setGenerated(null); setStage(intakeStages.length - 1); }}>Revise the intake</button></section></main>;
+  const downloadPackage = () => workspace && downloadFile(serializeWorkflowPackage(workspace.activePackage), workflowPackageDownloadName(data.workflowName));
+  if (workspace) return <GeneratedWorkflowExperience workspace={workspace} setWorkspace={setWorkspace} storageWarning={storageWarning} downloadPackage={downloadPackage} downloadIntake={downloadIntake} reviseIntake={() => { try { localStorage.removeItem(WORKSPACE_STORAGE_KEY); } catch { /* Continue in memory. */ } setWorkspace(null); setStage(intakeStages.length - 1); }}/>
   if (quickStart) return <main className="quick-start-page"><section className="quick-start-shell">
     <span className="eyebrow">Ready-made workflow</span><h1>{data.workflowName}</h1><p className="quick-lead">This common workflow is already filled in. Create it now, or customize the details only if the default does not fit.</p>
     <div className="quick-summary"><div className="quick-metrics"><span><Clock3/><b>{data.currentTimeMinutes}</b><small>current minutes</small></span><span><Workflow/><b>{data.currentSteps.length}</b><small>current steps</small></span><span><FileCheck2/><b>{data.desiredOutputs.length}</b><small>included outputs</small></span></div><div className="quick-includes"><h2>What this option includes</h2><ul>{data.desiredOutputs.slice(0, 4).map((output) => <li key={output}><Check/>{output}</li>)}</ul></div></div>
@@ -202,74 +218,6 @@ function Intake({ go }: { go: (to: Route) => void }) {
       <div className="form-actions">{stage > 0 ? <button type="button" className="button secondary" onClick={() => { setErrors([]); setStage(stage-1); }}><ChevronLeft/> Back</button> : <span/>}{stage < intakeStages.length-1 ? <button type="button" className="button primary" onClick={nextStage}>Continue <ChevronRight/></button> : <button className="button primary" type="submit">Create my workflow <Sparkles/></button>}</div>
     </form>
   </section></main>;
-}
-
-const feedbackCategories: Array<{ value: FeedbackCategory; label: string }> = [
-  { value: "accuracy", label: "Accuracy or unsupported content" },
-  { value: "clarity", label: "Instruction was unclear" },
-  { value: "missing_input", label: "Required input was missing" },
-  { value: "tool_fit", label: "Tool was unavailable or unsuitable" },
-  { value: "time", label: "Step took too long" },
-  { value: "other", label: "Another unmet need" },
-];
-
-function CorrectionLoop({ pkg, onApprove }: { pkg: WorkflowPackage; onApprove: (pkg: WorkflowPackage) => void }) {
-  const [feedback, setFeedback] = useState<WorkflowFeedback>({
-    failedStepOrder: pkg.improvedWorkflow[0]?.order ?? 1,
-    category: "clarity",
-    report: "",
-    desiredOutcome: "",
-    usefulnessRating: 3,
-    actualTimeMinutes: null,
-    correctionCount: 0,
-  });
-  const [errors, setErrors] = useState<string[]>([]);
-  const [draft, setDraft] = useState<WorkflowRevisionDraft | null>(null);
-  const [notice, setNotice] = useState("");
-  const setFeedbackField = <K extends keyof WorkflowFeedback>(key: K, value: WorkflowFeedback[K]) => setFeedback((current) => ({ ...current, [key]: value }));
-  const submit = (event: FormEvent) => {
-    event.preventDefault();
-    const nextErrors = validateWorkflowFeedback(feedback, pkg);
-    setErrors(nextErrors);
-    setNotice("");
-    if (nextErrors.length) return;
-    try { setDraft(draftWorkflowRevision(pkg, feedback)); } catch (error) { setErrors(error instanceof Error ? error.message.split("\n") : ["The correction draft could not be created."]); }
-  };
-  const approve = () => {
-    if (!draft) return;
-    const approved = approveWorkflowRevision(draft);
-    onApprove(approved.package);
-    setDraft(null);
-    setNotice(`Revision ${approved.package.version} is now the active package. The previous package was not changed until this approval.`);
-  };
-  const selectedOriginal = pkg.improvedWorkflow.find((step) => step.order === feedback.failedStepOrder);
-  const selectedDraft = draft?.proposedPackage.improvedWorkflow.find((step) => step.order === feedback.failedStepOrder);
-
-  return <section className="section result-content generated-detail correction-loop" aria-labelledby="correction-heading">
-    <SectionTitle eyebrow="Failure-to-correction loop" title="Report what did not meet your need." copy="A correction is drafted for one failed step. The active workflow stays unchanged until a person reviews and approves it."/>
-    <div className="prototype-boundary"><ShieldCheck/><p><b>Prototype boundary:</b> this draft is created locally with transparent rules, not an external AI provider. It tests the complaint, review, and approval experience without storing the report or changing privacy behavior.</p></div>
-    {notice && <div className="approval-notice" role="status"><Check/><span>{notice}</span></div>}
-    {!draft ? <form className="feedback-form" onSubmit={submit}>
-      <div className="feedback-grid">
-        <label className="field"><span>Usefulness after this run</span><select value={feedback.usefulnessRating} onChange={(event) => setFeedbackField("usefulnessRating", Number(event.target.value))}>{[1,2,3,4,5].map((rating) => <option value={rating} key={rating}>{rating} / 5</option>)}</select></label>
-        <label className="field"><span>Step that failed</span><select value={feedback.failedStepOrder} onChange={(event) => setFeedbackField("failedStepOrder", Number(event.target.value))}>{pkg.improvedWorkflow.map((step) => <option value={step.order} key={step.order}>{step.order}. {step.title}</option>)}</select></label>
-        <label className="field"><span>Failure type</span><select value={feedback.category} onChange={(event) => setFeedbackField("category", event.target.value as FeedbackCategory)}>{feedbackCategories.map((category) => <option value={category.value} key={category.value}>{category.label}</option>)}</select></label>
-        <label className="field"><span>Corrections you made</span><input type="number" min="0" value={feedback.correctionCount} onChange={(event) => setFeedbackField("correctionCount", Number(event.target.value))}/></label>
-        <label className="field"><span>Actual total time (optional)</span><input type="number" min="1" value={feedback.actualTimeMinutes ?? ""} onChange={(event) => setFeedbackField("actualTimeMinutes", event.target.value ? Number(event.target.value) : null)} placeholder="Minutes"/></label>
-      </div>
-      <Field label="What happened?" value={feedback.report} onChange={(value) => setFeedbackField("report", value)} multiline placeholder="Describe the point where the workflow failed, became unclear, or produced the wrong result."/>
-      <Field label="What would meet your need instead?" value={feedback.desiredOutcome} onChange={(value) => setFeedbackField("desiredOutcome", value)} multiline placeholder="State the result the corrected step must produce."/>
-      {errors.length > 0 && <div className="form-errors" role="alert"><b>Complete these items:</b>{errors.map((error) => <span key={error}>{error}</span>)}</div>}
-      <button className="button primary" type="submit"><RefreshCw/> Draft a correction</button>
-    </form> : <div className="revision-review">
-      <div className="revision-status"><span className="status ready">Pending human approval</span><b>Original v{draft.originalVersion} remains active</b><p>The correction changes only step {feedback.failedStepOrder}. Review the proposed action, approval check, and safe fallback before replacing the package.</p></div>
-      <div className="revision-compare">
-        <article><span className="card-label">CURRENT APPROVED STEP</span><h3>{selectedOriginal?.title}</h3><p><b>Action</b>{selectedOriginal?.action}</p><p><b>Human review</b>{selectedOriginal?.humanReview}</p><p><b>Failure condition</b>{selectedOriginal?.failureCondition}</p></article>
-        <article><span className="card-label">PROPOSED REVISION {draft.proposedPackage.version}</span><h3>{selectedDraft?.title}</h3><p><b>Action</b>{selectedDraft?.action}</p><p><b>Human review</b>{selectedDraft?.humanReview}</p><p><b>Failure condition</b>{selectedDraft?.failureCondition}</p></article>
-      </div>
-      <div className="revision-actions"><button className="button primary" type="button" onClick={approve}><Check/> Approve and replace package</button><button className="button secondary" type="button" onClick={() => setDraft(null)}>Keep current package</button></div>
-    </div>}
-  </section>;
 }
 
 function Field({ label, value, onChange, placeholder = "", multiline = false, type = "text" }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string; multiline?: boolean; type?: string }) {

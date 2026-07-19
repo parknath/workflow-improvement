@@ -44,8 +44,10 @@ export function validateWorkflowFeedback(feedback: WorkflowFeedback, pkg: Workfl
   const errors: string[] = [];
   if (!pkg.improvedWorkflow.some((step) => step.order === feedback.failedStepOrder)) errors.push("Choose a workflow step that exists in the active package.");
   if (!Number.isInteger(feedback.usefulnessRating) || feedback.usefulnessRating < 1 || feedback.usefulnessRating > 5) errors.push("Usefulness must be rated from 1 to 5.");
+  if (feedback.expectedOutcome.trim().length < 8) errors.push("Describe the expected result in at least 8 characters.");
+  if (feedback.actualOutcome.trim().length < 8) errors.push("Describe the actual result in at least 8 characters.");
+  if (feedback.fitReason.trim().length < 8) errors.push("Describe why the step did not fit in at least 8 characters.");
   if (feedback.report.trim().length < 20) errors.push("Describe what failed in at least 20 characters.");
-  if (feedback.desiredOutcome.trim().length < 12) errors.push("Describe the needed correction in at least 12 characters.");
   if (feedback.actualTimeMinutes !== null && (!Number.isFinite(feedback.actualTimeMinutes) || feedback.actualTimeMinutes < 1)) errors.push("Actual time must be a positive number when provided.");
   if (!Number.isInteger(feedback.correctionCount) || feedback.correctionCount < 0) errors.push("Correction count must be zero or more.");
   return errors;
@@ -64,6 +66,7 @@ export function draftWorkflowRevision(pkg: WorkflowPackage, feedback: WorkflowFe
   const step = proposedPackage.improvedWorkflow.find((item) => item.order === feedback.failedStepOrder);
   if (!step) throw new Error("The selected workflow step no longer exists.");
   const strategy = correctionStrategies[feedback.category];
+  const approvalTarget = feedback.desiredOutcome.trim() || feedback.expectedOutcome.trim();
   const changes: RevisionChange[] = [
     {
       field: "action",
@@ -74,7 +77,7 @@ export function draftWorkflowRevision(pkg: WorkflowPackage, feedback: WorkflowFe
     {
       field: "humanReview",
       before: step.humanReview,
-      after: `${step.humanReview} ${strategy.review} Approval target: ${feedback.desiredOutcome.trim()}`,
+      after: `${step.humanReview} ${strategy.review} Approval target: ${approvalTarget}`,
       rationale: "Makes acceptance of the correction an explicit human decision.",
     },
     {

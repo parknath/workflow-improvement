@@ -39,6 +39,8 @@ describe("workflow engine", () => {
     const pkg = generatePackage(lectureIntake);
     expect(pkg.improvedWorkflow).toHaveLength(11);
     expect(pkg.assets.length).toBeGreaterThanOrEqual(8);
+    expect(pkg.assets.every((asset) => asset.stepOrders.length > 0 && asset.purpose && asset.humanVerification && asset.prohibitedUse)).toBe(true);
+    expect(pkg.assets.find((asset) => asset.name === "Lecture-brief instruction")?.stepOrders).toEqual([4]);
     expect(pkg.improvedWorkflow.every((step) => step.aiInvolvement && step.failureCondition)).toBe(true);
     expect(pkg.priorityImprovements).toHaveLength(3);
     expect(Object.keys(renderMarkdownFiles(pkg))).toHaveLength(9);
@@ -72,6 +74,7 @@ describe("workflow engine", () => {
     expect(pkg.assets.find((asset) => asset.name === "Approved-tool and data-boundary preflight")?.content).toContain("manual or institution-approved fallback");
     expect(pkg.assets.find((asset) => asset.name === "Academic decision record")?.content).toContain("Human approval recorded");
     expect(pkg.assets.find((asset) => asset.name === "Run evidence log")?.content).toContain("Result on the next comparable run");
+    expect(pkg.assets.find((asset) => asset.name === "Approved-tool and data-boundary preflight")?.stepOrders).toEqual([1]);
     expect(pkg.improvedWorkflow.every((step) => step.action && step.humanReview && step.failureCondition)).toBe(true);
   });
   it("rejects steps without executable inputs and outputs", () => {

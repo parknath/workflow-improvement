@@ -7,6 +7,9 @@ import type { WorkflowFeedback } from "./types";
 const validFeedback: WorkflowFeedback = {
   failedStepOrder: 3,
   category: "accuracy",
+  expectedOutcome: "Every claim is supported by an approved source.",
+  actualOutcome: "Two claims had no support in the supplied chapter.",
+  fitReason: "The verification instruction was too easy to miss.",
   report: "The first draft included two claims that were not supported by the approved chapter.",
   desiredOutcome: "Every academic claim traces to an approved source.",
   usefulnessRating: 3,
