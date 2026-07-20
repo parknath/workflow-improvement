@@ -1,6 +1,6 @@
 import { preview } from "vite";
 
-const routes = ["/", "/how-it-works", "/workflows", "/demo", "/intake", "/sample-result"];
+const routes = ["/", "/how-it-works", "/workflows", "/demo", "/intake", "/sample-result", "/inbox-automation"];
 const server = await preview({
   preview: { host: "127.0.0.1", port: 4173, strictPort: true },
 });
@@ -14,7 +14,7 @@ try {
     if (response.status !== 200) failed = true;
     if (route === "/") shell = await response.text();
   }
-  const scriptPath = shell.match(/<script[^>]+src="([^"]+)"/)?.[1];
+  const scriptPath = shell.match(/<script[^>]+src="([^"]*\/assets\/[^"]+)"/)?.[1];
   if (!scriptPath) throw new Error("Production shell did not expose its application bundle.");
   const bundle = await (await fetch(`http://127.0.0.1:4173${scriptPath}`)).text();
   const requiredContracts = [
@@ -31,6 +31,10 @@ try {
     "Download previous v",
     "workflow-lab-active-workflow",
     "does not operate external tools",
+    "Scan and classify with ChatGPT",
+    "Apply selected actions",
+    "Reads message metadata and short snippets only",
+    "Backend connector required",
   ];
   for (const contract of requiredContracts) {
     if (!bundle.includes(contract)) {

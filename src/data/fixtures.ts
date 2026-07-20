@@ -78,6 +78,7 @@ export const courseMaterialsIntake: WorkflowIntake = {
 };
 
 export const workflowCards = [
+  { title: "Inbox to action list", audience: "Professor / operator", ready: true, description: "Scan Gmail, classify actions with ChatGPT, and approve Google Sheets tasks or Calendar reminders." },
   { title: "Lecture preparation", audience: "Professor", ready: true, description: "Turn scattered source material into a reviewed teaching package." },
   { title: "Assignment redesign for AI", audience: "Professor", ready: true, description: "Align instructions, AI-use boundaries, process evidence, and the rubric." },
   { title: "Course material organization", audience: "Professor", ready: true, description: "Create one findable, publish-ready weekly teaching set." },

@@ -2,7 +2,7 @@ import fs from "node:fs";
 
 const index = "dist/index.html";
 const fallback = "dist/404.html";
-const routes = ["how-it-works", "workflows", "demo", "intake", "sample-result"];
+const routes = ["how-it-works", "workflows", "demo", "intake", "sample-result", "inbox-automation"];
 
 if (!fs.existsSync(index)) throw new Error("Build output is missing dist/index.html");
 fs.copyFileSync(index, fallback);
