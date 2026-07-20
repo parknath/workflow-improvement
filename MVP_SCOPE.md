@@ -9,7 +9,7 @@
 - Browser-only intake and active-workflow persistence, intake JSON export, in-browser workflow generation, action-first presentation, and workflow JSON export.
 - One-step-at-a-time guided run with complete, skip, back, problem, save/exit, and end-run controls.
 - Step-linked reusable assets with purpose, copy behavior, human verification, and prohibited-use guidance.
-- Browser-local first-run measurement and copyable/downloadable latest-run summary.
+- Browser-local measurement, one-prior-run comparison, and copyable/downloadable evidence without adding retained history.
 - Browser-local problem capture, one-step correction drafting, side-by-side review, explicit approval before active-version replacement, and one immediately previous approved version.
 - JSON Schema and TypeScript intake model.
 - Deterministic validation, scoring, classification, diagnosis, redesign, assets, safety controls, example execution, and measurement plan.

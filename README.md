@@ -1,8 +1,8 @@
 # Workflow Lab
 
-Workflow Lab is a browser-based concierge-MVP prototype for improving one recurring workflow at a time. It maps the current process, diagnoses wasted effort and risk, creates an executable redesign, and guides the user through each step with reusable templates, AI-assisted instructions, checkpoints, and first-run measurement.
+Workflow Lab is a browser-based concierge-MVP prototype for improving one recurring workflow at a time. It maps the current process, diagnoses wasted effort and risk, creates an executable redesign, and guides the user through each step with reusable templates, AI-assisted instructions, checkpoints, and comparable-run measurement.
 
-The first two complete workflows are professor lecture preparation and student weekly academic planning. Generic professor workflows also receive an approved-tool/data-boundary preflight, an academic decision record, and a run evidence log. A user can generate a ready-made workflow, start it immediately, complete or skip one step at a time, use assets in context, report a problem, approve or reject a local draft revision, and save a measured result as the baseline for the next run. The active workflow, in-progress run, last run summary, and immediately previous approved version stay in the current browser; both active and previous versions can be downloaded. Generation and correction drafting are local and deterministic; the prototype does not call an AI provider or send workflow or feedback data to a server.
+The first two complete workflows are professor lecture preparation and student weekly academic planning. Generic professor workflows also receive an approved-tool/data-boundary preflight, an academic decision record, and a run evidence log. A user can generate a ready-made workflow, start it immediately, complete or skip one step at a time, use assets in context, report a problem, approve or reject a local draft revision, and compare the next measured run with the prior baseline. The current run and one prior comparable summary reuse the same two browser-local record slots that previously held a duplicated latest result; no additional run history is retained. Active and previous workflow versions plus the measured evidence can be downloaded. Generation and correction drafting are local and deterministic; the prototype does not call an AI provider or send workflow or feedback data to a server.
 
 ## Run the website
 
@@ -25,7 +25,7 @@ To use it on yourself:
 2. Review the short ready-made summary and select **Use this workflow**. No detailed intake is required.
 3. Select **Start workflow** and follow one clear step at a time. Reusable assets appear in the steps where they are needed.
 4. Complete, skip, revisit, or report a problem with a step. The active version does not change until you approve a draft revision.
-5. Record actual time, usefulness, corrections, reuse intent, and the next change. Use that measured result as the baseline for a comparable next run.
+5. Record actual time, usefulness, corrections, reuse intent, and the next change. On the following run, Workflow Lab shows factual time, usefulness, correction, completion, and workflow-version differences without claiming causation.
 6. Use **Customize first** only when the default needs adjustment, or **Build a custom workflow** when none of the common options fits.
 
 The prototype stores the draft in the current browser. Do not enter confidential or identifiable student information.
@@ -72,7 +72,7 @@ pnpm verify
 - `src/data/fixtures.ts`: realistic ready-made workflow inputs and workflow-library cards.
 - `src/engine/`: validation, scoring, classification, generation, Markdown output, and CLI.
 - `src/revision.ts`: validated problem-to-correction drafting and mandatory approval boundary.
-- `src/workflowRun.ts`: browser-local active workflow, run progress, measurement, previous-version, and summary behavior.
+- `src/workflowRun.ts`: browser-local active workflow, run progress, measurement, prior-run comparison, previous-version, and evidence export behavior.
 - `src/WorkflowExperience.tsx`: action-first result, guided workflow run, contextual assets, measurement, and revision UI.
 - `src/App.tsx`: public routes, preset selection, detailed intake, interactive demo, and sample result.
 - `src/config.ts`: centralized working name and primary public copy.

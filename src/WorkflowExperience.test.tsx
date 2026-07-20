@@ -47,6 +47,20 @@ describe("guided workflow experience", () => {
     expect(html).toContain("Start next run");
   });
 
+  it("renders an evidence-safe comparison after the next measured run", () => {
+    let workspace = endWorkflowRun(startWorkflowRun(createWorkflowWorkspace(generatePackage(lectureIntake)), new Date("2026-07-19T01:00:00.000Z")));
+    workspace = updateRunMeasurement(workspace, { taskCompleted: true, actualTotalMinutes: 61, usefulnessRating: 3, correctionCount: 2, mostUsefulAsset: "Session folder structure", leastUsefulStepOrder: 5, reuseIntent: "yes", nextChange: "Clarify the sequence." });
+    workspace = completeFirstRunMeasurement(workspace, new Date("2026-07-19T02:03:00.000Z"));
+    workspace = endWorkflowRun(startWorkflowRun(workspace, new Date("2026-07-26T01:00:00.000Z")), new Date("2026-07-26T01:51:00.000Z"));
+    workspace = updateRunMeasurement(workspace, { taskCompleted: true, actualTotalMinutes: 51, usefulnessRating: 4, correctionCount: 1, mostUsefulAsset: "Session folder structure", leastUsefulStepOrder: 4, reuseIntent: "yes", nextChange: "Repeat the source check." });
+    workspace = completeFirstRunMeasurement(workspace, new Date("2026-07-26T01:53:00.000Z"));
+    const html = render(workspace);
+    expect(html).toContain("Your second result can now be compared.");
+    expect(html).toContain("10 min less");
+    expect(html).toContain("not proof that Workflow Lab caused the change");
+    expect(html).toContain("Download comparison");
+  });
+
   it("shows a pending revision without replacing the active version", () => {
     let workspace = startWorkflowRun(createWorkflowWorkspace(generatePackage(lectureIntake)));
     const feedback: WorkflowFeedback = { failedStepOrder: 1, category: "clarity", expectedOutcome: "A named session workspace", actualOutcome: "The folder name was inconsistent", fitReason: "The naming rule was not specific enough", report: "The step left the folder naming pattern open to interpretation.", desiredOutcome: "", usefulnessRating: 3, actualTimeMinutes: 9, correctionCount: 1 };
@@ -55,7 +69,8 @@ describe("guided workflow experience", () => {
     const html = render(workspace);
     expect(html).toContain("Active v0.1 remains unchanged");
     expect(html).toContain("DRAFT REVISION 0.2");
-    expect(html).toContain("Approve and make active");
+    expect(html).toContain("Approval ends this affected run for measurement");
+    expect(html).toContain("Approve for next run");
   });
 
   it("makes the immediately previous approved version retrievable", () => {

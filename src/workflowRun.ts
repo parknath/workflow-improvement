@@ -36,8 +36,10 @@ export function createWorkflowWorkspace(pkg: WorkflowPackage): WorkflowWorkspace
 export function startWorkflowRun(workspace: WorkflowWorkspace, now = new Date()): WorkflowWorkspace {
   const firstStep = workspace.activePackage.improvedWorkflow[0];
   if (!firstStep) throw new Error("This workflow has no executable steps.");
+  const completedRun = summarizeCompletedRun(workspace);
   return {
     ...workspace,
+    lastRunSummary: completedRun ?? workspace.lastRunSummary,
     pendingRevision: null,
     currentRun: {
       id: `run-${now.getTime()}`,
@@ -129,21 +131,38 @@ export function completeFirstRunMeasurement(workspace: WorkflowWorkspace, now = 
   if (errors.length) throw new Error(errors.join("\n"));
   const run = workspace.currentRun;
   const completedAt = now.toISOString();
-  const summary: WorkflowRunSummary = {
+  return {
+    ...workspace,
+    currentRun: { ...run, status: "completed", endedAt: completedAt },
+  };
+}
+
+export function summarizeCompletedRun(workspace: WorkflowWorkspace): WorkflowRunSummary | null {
+  const run = workspace.currentRun;
+  if (!run || run.status !== "completed" || !run.endedAt) return null;
+  return {
     ...structuredClone(run.measurement),
     runId: run.id,
     workflowName: workspace.activePackage.metadata.workflowName,
     workflowVersion: run.workflowVersion,
     startedAt: run.startedAt,
-    completedAt,
+    completedAt: run.endedAt,
     completedStepOrders: [...run.completedStepOrders],
     skippedStepOrders: [...run.skippedStepOrders],
     problemsReported: run.problems.length,
   };
+}
+
+export function compareWorkflowRuns(baseline: WorkflowRunSummary, current: WorkflowRunSummary) {
   return {
-    ...workspace,
-    lastRunSummary: summary,
-    currentRun: { ...run, status: "completed", endedAt: completedAt },
+    baselineRunId: baseline.runId,
+    currentRunId: current.runId,
+    workflowVersionChange: `${baseline.workflowVersion} -> ${current.workflowVersion}`,
+    timeDeltaMinutes: (current.actualTotalMinutes ?? 0) - (baseline.actualTotalMinutes ?? 0),
+    usefulnessDelta: current.usefulnessRating - baseline.usefulnessRating,
+    correctionDelta: current.correctionCount - baseline.correctionCount,
+    baselineTaskCompleted: baseline.taskCompleted,
+    currentTaskCompleted: current.taskCompleted,
   };
 }
 
@@ -162,12 +181,27 @@ export function applyApprovedPackage(workspace: WorkflowWorkspace, pkg: Workflow
     previousPackage: structuredClone(workspace.activePackage),
     activePackage: structuredClone(pkg),
     pendingRevision: null,
-    currentRun: workspace.currentRun ? { ...workspace.currentRun, workflowVersion: pkg.version } : null,
+    currentRun: workspace.currentRun,
   };
+}
+
+export function applyApprovedPackageForNextRun(workspace: WorkflowWorkspace, pkg: WorkflowPackage, now = new Date()): WorkflowWorkspace {
+  return endWorkflowRun(applyApprovedPackage(workspace, pkg), now);
 }
 
 export function serializeRunSummary(summary: WorkflowRunSummary): string {
   return JSON.stringify(summary, null, 2);
+}
+
+export function serializeRunEvidence(current: WorkflowRunSummary, baseline: WorkflowRunSummary | null): string {
+  return JSON.stringify({
+    currentRun: current,
+    priorComparableRun: baseline,
+    comparison: baseline ? compareWorkflowRuns(baseline, current) : null,
+    interpretation: baseline
+      ? "Observed differences between two runs; this does not prove that Workflow Lab caused the change."
+      : "First measured run; a comparable prior run is not yet available.",
+  }, null, 2);
 }
 
 function isWorkspace(value: unknown): value is WorkflowWorkspace {

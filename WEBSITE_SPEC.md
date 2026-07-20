@@ -10,7 +10,7 @@ The experience should feel calm and immediately usable: generous whitespace, sys
 - `/how-it-works`: capture, diagnose, redesign, implement, and measure method plus classifications.
 - `/workflows`: ready-made and future workflow cards; lecture preparation, assignment redesign, course-material organization, and weekly planning are usable presets.
 - `/demo`: role/workflow selector with fixture-generated baseline, bottlenecks, priorities, redesign, estimate, and review points.
-- `/intake`: short ready-made workflow confirmation, action-first generated result, browser-local guided workflow run, contextual reusable assets, first-run measurement, human-approved revision, active/previous version handling, plus an optional six-step detailed intake and JSON downloads.
+- `/intake`: short ready-made workflow confirmation, action-first generated result, browser-local guided workflow run, contextual reusable assets, comparable-run measurement and evidence export, human-approved revision, active/previous version handling, plus an optional six-step detailed intake and JSON downloads.
 - `/sample-result`: complete professor result across overview, diagnosis, redesigned workflow, assets, and measurement.
 
 ## Accessibility and responsiveness
@@ -23,4 +23,4 @@ The guided run presents one step at a time with progress, complete, skip, back, 
 
 The working name and primary homepage copy live in `src/config.ts`. Any time-reduction figure is labeled as a prototype estimate and paired with a measurement plan. Human responsibility and privacy boundaries remain visible throughout the experience.
 
-The generated result leads with the active version, objective, immediate next action, and **Start workflow**. Diagnosis, the complete sequence, all assets, measurement guidance, and downloads remain available through progressive disclosure. Recurring-value copy may invite a comparable next run but must not claim an improvement until measured evidence supports it.
+The generated result leads with the active version, objective, immediate next action, and **Start workflow**. Diagnosis, the complete sequence, all assets, measurement guidance, and downloads remain available through progressive disclosure. The second completed run compares factual deltas with the one prior baseline and exports both records together. Recurring-value copy may invite a comparable next run but must not claim causation or improvement from time alone.

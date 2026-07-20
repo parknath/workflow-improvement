@@ -20,4 +20,4 @@ Technical automability alone never overrides risk or judgment. High-judgment ste
 
 ## Measurement
 
-The workflow reports the user-provided baseline and a clearly labeled prototype target. A browser-local run records completed and skipped steps, problems, actual total time, corrections, usefulness, asset usefulness, weak steps, reuse intent, and one change for the next comparable run. A measured first run is a baseline, not proof of improvement.
+The workflow reports the user-provided baseline and a clearly labeled prototype target. A browser-local run records completed and skipped steps, problems, actual total time, corrections, usefulness, asset usefulness, weak steps, reuse intent, and one change for the next comparable run. A measured first run is a baseline, not proof of improvement. A completed next run is compared with that baseline on time, usefulness, corrections, completion, and workflow version. The comparison reports observed differences and explicitly does not claim that Workflow Lab caused them.

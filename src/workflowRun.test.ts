@@ -5,6 +5,8 @@ import { approveWorkflowRevision, draftWorkflowRevision } from "./revision";
 import type { WorkflowFeedback } from "./types";
 import {
   applyApprovedPackage,
+  applyApprovedPackageForNextRun,
+  compareWorkflowRuns,
   completeFirstRunMeasurement,
   completeWorkflowStep,
   createWorkflowWorkspace,
@@ -15,6 +17,7 @@ import {
   saveWorkflowWorkspace,
   skipWorkflowStep,
   startWorkflowRun,
+  summarizeCompletedRun,
   updateRunMeasurement,
   validateFirstRunMeasurement,
   WORKSPACE_STORAGE_KEY,
@@ -98,9 +101,46 @@ describe("browser-local workflow run", () => {
     });
     workspace = completeFirstRunMeasurement(workspace, new Date("2026-07-19T02:03:00.000Z"));
     expect(workspace.currentRun?.status).toBe("completed");
-    expect(workspace.lastRunSummary).toMatchObject({ actualTotalMinutes: 58, usefulnessRating: 4, reuseIntent: "yes", workflowVersion: "0.1" });
+    expect(workspace.lastRunSummary).toBeNull();
+    expect(summarizeCompletedRun(workspace)).toMatchObject({ actualTotalMinutes: 58, usefulnessRating: 4, reuseIntent: "yes", workflowVersion: "0.1" });
     const nextRun = startWorkflowRun(workspace, new Date("2026-07-26T01:00:00.000Z"));
-    expect(nextRun.lastRunSummary).toEqual(workspace.lastRunSummary);
+    expect(nextRun.lastRunSummary).toEqual(summarizeCompletedRun(workspace));
     expect(nextRun.currentRun?.completedStepOrders).toEqual([]);
+  });
+
+  it("keeps one prior run as the baseline and compares it with the completed next run", () => {
+    let workspace = startWorkflowRun(createWorkflowWorkspace(generatePackage(lectureIntake)), new Date("2026-07-19T01:00:00.000Z"));
+    workspace = endWorkflowRun(workspace, new Date("2026-07-19T02:00:00.000Z"));
+    workspace = updateRunMeasurement(workspace, { taskCompleted: true, actualTotalMinutes: 60, usefulnessRating: 3, correctionCount: 2, mostUsefulAsset: "Lecture brief template", leastUsefulStepOrder: 5, reuseIntent: "yes", nextChange: "Clarify the lesson structure." });
+    workspace = completeFirstRunMeasurement(workspace, new Date("2026-07-19T02:03:00.000Z"));
+    workspace = startWorkflowRun(workspace, new Date("2026-07-26T01:00:00.000Z"));
+    const baseline = workspace.lastRunSummary!;
+    workspace = endWorkflowRun(workspace, new Date("2026-07-26T01:50:00.000Z"));
+    workspace = updateRunMeasurement(workspace, { taskCompleted: true, actualTotalMinutes: 50, usefulnessRating: 4, correctionCount: 1, mostUsefulAsset: "Lecture brief template", leastUsefulStepOrder: 4, reuseIntent: "yes", nextChange: "Test the source check again." });
+    workspace = completeFirstRunMeasurement(workspace, new Date("2026-07-26T01:52:00.000Z"));
+    const current = summarizeCompletedRun(workspace)!;
+    expect(workspace.lastRunSummary).toEqual(baseline);
+    expect(compareWorkflowRuns(baseline, current)).toMatchObject({ timeDeltaMinutes: -10, usefulnessDelta: 1, correctionDelta: -1, baselineTaskCompleted: true, currentTaskCompleted: true });
+  });
+
+  it("keeps the run's starting version when an approved revision becomes active", () => {
+    let workspace = startWorkflowRun(createWorkflowWorkspace(generatePackage(lectureIntake)));
+    const approved = approveWorkflowRevision(draftWorkflowRevision(workspace.activePackage, feedback));
+    workspace = applyApprovedPackage(workspace, approved.package);
+    expect(workspace.activePackage.version).toBe("0.2");
+    expect(workspace.currentRun?.workflowVersion).toBe("0.1");
+  });
+
+  it("ends the affected run for measurement and applies an approved version to the next run", () => {
+    let workspace = startWorkflowRun(createWorkflowWorkspace(generatePackage(lectureIntake)), new Date("2026-07-19T01:00:00.000Z"));
+    const approved = approveWorkflowRevision(draftWorkflowRevision(workspace.activePackage, feedback));
+    workspace = applyApprovedPackageForNextRun(workspace, approved.package, new Date("2026-07-19T01:18:00.000Z"));
+    expect(workspace.activePackage.version).toBe("0.2");
+    expect(workspace.currentRun).toMatchObject({ status: "measuring", workflowVersion: "0.1", endedAt: "2026-07-19T01:18:00.000Z" });
+    workspace = updateRunMeasurement(workspace, { taskCompleted: false, actualTotalMinutes: 18, usefulnessRating: 3, correctionCount: 1, mostUsefulAsset: "Lecture brief template", leastUsefulStepOrder: 2, reuseIntent: "yes", nextChange: "Use the approved source check." });
+    workspace = completeFirstRunMeasurement(workspace, new Date("2026-07-19T01:20:00.000Z"));
+    workspace = startWorkflowRun(workspace, new Date("2026-07-26T01:00:00.000Z"));
+    expect(workspace.lastRunSummary?.workflowVersion).toBe("0.1");
+    expect(workspace.currentRun?.workflowVersion).toBe("0.2");
   });
 });

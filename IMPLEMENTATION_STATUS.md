@@ -1,6 +1,6 @@
 # Implementation status
 
-Last updated: 2026-07-19
+Last updated: 2026-07-20
 
 ## Current state
 
@@ -21,10 +21,11 @@ The first public static prototype is complete against the 2026-07-15 handoff def
 - Action-first generated result with active version, objective, immediate next action, one primary start/resume control, and progressively disclosed diagnosis, full workflow, assets, measurement guidance, and downloads.
 - Browser-local guided workflow runs with one-step focus, complete/skip/back/problem/end controls, progress restoration after refresh, and explicit external-tool and academic-responsibility boundaries.
 - Reusable assets mapped into relevant workflow steps with purpose, copy action, human-verification guidance, and prohibited-use boundaries.
-- Browser-local first-run measurement for completion, actual time, usefulness, corrections, skipped steps, useful asset, weak step, reuse intent, and next-run change, plus copyable/downloadable run summaries.
+- Browser-local comparable-run measurement for completion, actual time, usefulness, corrections, skipped steps, useful asset, weak step, reuse intent, and next-run change, plus copyable/downloadable evidence.
 - Problem reporting with expected versus actual outcome, fit reason, failure type, and optional preferred correction.
 - Local rule-based correction drafting that changes only the reported step, presents the current and proposed instructions side by side, retains a safe fallback, and requires explicit human approval before active-version replacement.
-- Active workflow, latest run summary, pending revision, and immediately previous approved version persist in the current browser, providing a safe first-run-to-next-run improvement loop without claiming unmeasured outcomes.
+- The current completed run and one prior comparable summary now produce an explicit two-run comparison for time, usefulness, corrections, completion, and workflow version. The same two existing browser-local record slots are reused rather than expanding retained history; observed differences are not labeled as causation.
+- A run keeps its starting workflow version when a correction becomes active. Approval ends the affected run for measurement, and the revised workflow begins on the next run, preserving the provenance required for an honest comparison.
 - Human-review, privacy, safety, failure/escalation, and measurement controls.
 - Product, scope, technical, website, engine, and run documentation.
 - A professor assignment-redesign pilot protocol with uncoached task instructions, safety boundaries, two-run evidence capture, separate willingness-to-pay questions, and precommitted continue/change/kill rules.
@@ -37,7 +38,7 @@ The first public static prototype is complete against the 2026-07-15 handoff def
 
 ## Verification record
 
-- `pnpm test`: passed 30 tests covering the prior engine, intake, revision, and routing contracts plus asset-to-step mapping, run start/complete/skip/back behavior, browser persistence and corrupt-state recovery, problem recording, first-run measurement, previous-version preservation and retrieval, next-run baseline retention, and server-rendered overview/run/measurement/summary/revision states.
+- `pnpm test`: passed 34 tests covering the prior engine, intake, revision, and routing contracts plus asset-to-step mapping, run start/complete/skip/back behavior, browser persistence and corrupt-state recovery, problem recording, comparable-run measurement, previous-version preservation and retrieval, baseline promotion without added retention, revision-to-next-run version provenance, two-run deltas, and server-rendered overview/run/measurement/comparison/revision states.
 - `pnpm run typecheck`: passed with TypeScript strict mode.
 - `pnpm run build`: passed; Vite produced the production bundle.
 - `pnpm generate`: passed; generated professor JSON plus nine non-empty Markdown files.
@@ -46,7 +47,7 @@ The first public static prototype is complete against the 2026-07-15 handoff def
 - Generated-package audit: professor package has 11 executable redesigned steps, 9 reusable assets, a 240-minute baseline, and a clearly labeled 124-minute prototype target; student package has 10 executable redesigned steps, 10 reusable assets, a 100-minute baseline, and a clearly labeled 80-minute prototype target.
 - Generated content inspection: current maps include actions, inputs, outputs, tools, time, and pain points; operating guides include human checkpoints and escalation; example runs are explicitly illustrative; measurement plans include before/after step counts, corrections, effort, repeatability, and post-use feedback.
 - Route smoke check: all six production routes return HTTP 200. The built bundle contract requires the start action, immediate next action, complete/problem controls, first-run measurement, approval action, browser workspace key, and external-tool disclosure. Non-GUI package audits require executable actions, human review, and stop conditions.
-- `pnpm verify`: passed the complete local gate on 2026-07-19, including all three example schema checks, both generated-package audits, and all six HTTP routes.
+- `pnpm verify`: passed the complete local gate before the final revision-transition regression was added; the final gate with 34 tests is recorded in `daily/2026-07-20.md`. The sandboxed runner required the bundled Node path and an approved unsandboxed run because `tsx` opens a local IPC socket.
 - GitHub quality and Pages workflows passed for release commit `382ac33`. The deployed root plus `/how-it-works/`, `/workflows/`, `/demo/`, `/intake/`, and `/sample-result/` returned HTTPS 200. Desktop rendering and a 390px intake layout were checked; the mobile page had no horizontal overflow.
 - The simplified self-use release `070777a` also passed both remote workflows. The live homepage and intake returned HTTPS 200, the three starter choices rendered, and the lecture starter opened the six-step intake with its editable example selected.
 - The preset-first release `8cb6131` passed both remote workflows. The live assignment-redesign option opened a ready-made summary and generated the complete package without rendering the detailed intake form; the custom-workflow escape hatch and mobile layouts also passed.
@@ -57,12 +58,12 @@ The first public static prototype is complete against the 2026-07-15 handoff def
 - The concierge operator reviews generated packages before early-user delivery.
 - The user supplies accurate baseline time and approved source material.
 - The prototype target time is a planning estimate, not a promised result.
-- Browser storage is acceptable for non-sensitive prototype drafts, workflow progress, one previous version, and the latest run baseline on one device.
+- Browser storage is acceptable for non-sensitive prototype drafts, workflow progress, one previous workflow version, the current run, and one prior comparable run summary on one device.
 
 ## Known limitations
 
 - No production backend or durable cross-device storage.
-- No durable server or cross-device history. The current browser retains one active workflow, one immediately previous approved version, the current run, pending revision, and latest run summary; clearing site data removes them.
+- No durable server or cross-device history. The current browser retains one active workflow, one immediately previous approved version, the current run, pending revision, and one prior comparable run summary; clearing site data removes them.
 - No external AI generation; package generation and correction drafting are deterministic prototype behavior, while AI steps remain instructions and mock content.
 - No authentication, integrations, analytics, or collaboration.
 - Public routes use static per-route entry files; client navigation remains History API based.
