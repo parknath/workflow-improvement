@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "professor-pilot-record.schema.json",
+  "title": "Workflow Lab professor pilot evidence record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "participantCode", "discipline", "courseLevel", "assignmentAndTrigger", "institutionalPolicySource", "painfulJobConfirmed", "dataBoundaryConfirmed", "containsPersonalData", "session1", "session2", "purchaseEvidence", "researchNotes"],
+  "properties": {
+    "schemaVersion": { "const": "1.0" },
+    "participantCode": { "type": "string", "pattern": "^[A-Z0-9_-]{3,32}$" },
+    "discipline": { "type": "string", "minLength": 2, "maxLength": 100 },
+    "courseLevel": { "type": "string", "minLength": 2, "maxLength": 100 },
+    "assignmentAndTrigger": { "type": "string", "minLength": 10, "maxLength": 1000 },
+    "institutionalPolicySource": { "type": "string", "minLength": 3, "maxLength": 1000 },
+    "painfulJobConfirmed": { "type": "boolean" },
+    "dataBoundaryConfirmed": { "type": "boolean" },
+    "containsPersonalData": { "const": false },
+    "session1": { "$ref": "#/$defs/session1" },
+    "session2": { "anyOf": [{ "type": "null" }, { "$ref": "#/$defs/session2" }] },
+    "purchaseEvidence": { "$ref": "#/$defs/purchaseEvidence" },
+    "researchNotes": { "type": "string", "maxLength": 4000 }
+  },
+  "$defs": {
+    "criticalDefect": { "enum": ["none", "privacy", "academic_control"] },
+    "session1": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["completedOn", "intakeCompletedWithoutHelp", "packageGenerated", "usefulnessRating", "actualTotalMinutes", "operatorHelpPoints", "genuineComplaint", "correctionDecision", "correctionReason", "criticalDefect", "criticalDefectResolved"],
+      "properties": {
+        "completedOn": { "type": ["string", "null"], "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "intakeCompletedWithoutHelp": { "type": ["boolean", "null"] },
+        "packageGenerated": { "type": ["boolean", "null"] },
+        "usefulnessRating": { "type": ["integer", "null"], "minimum": 1, "maximum": 5 },
+        "actualTotalMinutes": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "operatorHelpPoints": { "type": "array", "maxItems": 20, "items": { "type": "string", "minLength": 2, "maxLength": 500 } },
+        "genuineComplaint": { "type": ["string", "null"], "minLength": 5, "maxLength": 2000 },
+        "correctionDecision": { "enum": ["approved", "rejected", "unsafe", "no_draft", "not_completed"] },
+        "correctionReason": { "type": ["string", "null"], "minLength": 5, "maxLength": 2000 },
+        "criticalDefect": { "$ref": "#/$defs/criticalDefect" },
+        "criticalDefectResolved": { "type": "boolean" }
+      }
+    },
+    "session2": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["completedOn", "comparableTaskBasis", "completedWithoutHelp", "taskCompleted", "usefulnessRating", "actualTotalMinutes", "correctionCount", "complaintResolved", "approvedCorrectionUseful", "criticalDefect", "criticalDefectResolved", "freeInstitutionalSubstituteAdequate"],
+      "properties": {
+        "completedOn": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "comparableTaskBasis": { "type": "string", "minLength": 10, "maxLength": 2000 },
+        "completedWithoutHelp": { "type": "boolean" },
+        "taskCompleted": { "type": "boolean" },
+        "usefulnessRating": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "actualTotalMinutes": { "type": "number", "exclusiveMinimum": 0 },
+        "correctionCount": { "type": "integer", "minimum": 0 },
+        "complaintResolved": { "type": ["boolean", "null"] },
+        "approvedCorrectionUseful": { "type": ["boolean", "null"] },
+        "criticalDefect": { "$ref": "#/$defs/criticalDefect" },
+        "criticalDefectResolved": { "type": "boolean" },
+        "freeInstitutionalSubstituteAdequate": { "type": "boolean" }
+      }
+    },
+    "purchaseEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["preferredFormat", "preferredPayer", "tooCheapMonthly", "reasonableMonthly", "expensiveButPossibleMonthly", "tooExpensiveMonthly", "commitment", "commitmentEvidence"],
+      "properties": {
+        "preferredFormat": { "enum": ["ongoing_revision_subscription", "one_time_package", "institution_provided", "none", "undecided", "not_asked"] },
+        "preferredPayer": { "enum": ["personal_card", "professional_development", "department", "teaching_center", "student_shared", "none", "undecided", "not_asked"] },
+        "tooCheapMonthly": { "type": ["number", "null"], "minimum": 0 },
+        "reasonableMonthly": { "type": ["number", "null"], "minimum": 0 },
+        "expensiveButPossibleMonthly": { "type": ["number", "null"], "minimum": 0 },
+        "tooExpensiveMonthly": { "type": ["number", "null"], "minimum": 0 },
+        "commitment": { "enum": ["paid_pilot_when_available", "introduce_buyer", "another_unpaid_test", "stop", "none", "not_asked"] },
+        "commitmentEvidence": { "type": ["string", "null"], "minLength": 5, "maxLength": 2000 }
+      }
+    }
+  }
+}

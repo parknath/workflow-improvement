@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "1.0",
+  "participantCode": "SYNTHETIC-001",
+  "discipline": "History (synthetic example)",
+  "courseLevel": "Undergraduate (synthetic example)",
+  "assignmentAndTrigger": "Synthetic example: revise a source-analysis assignment before its next scheduled course run.",
+  "institutionalPolicySource": "Synthetic example policy reference",
+  "painfulJobConfirmed": true,
+  "dataBoundaryConfirmed": true,
+  "containsPersonalData": false,
+  "session1": {
+    "completedOn": "2026-07-22",
+    "intakeCompletedWithoutHelp": true,
+    "packageGenerated": true,
+    "usefulnessRating": 4,
+    "actualTotalMinutes": 48,
+    "operatorHelpPoints": [],
+    "genuineComplaint": "Synthetic example: the evidence-check step did not specify how to preserve the original learning objective.",
+    "correctionDecision": "approved",
+    "correctionReason": "Synthetic example: the proposed check made the learning-objective review explicit without automating the decision.",
+    "criticalDefect": "none",
+    "criticalDefectResolved": true
+  },
+  "session2": {
+    "completedOn": "2026-07-29",
+    "comparableTaskBasis": "Synthetic example: the same assignment family, policy boundary, learning objective, and expected output were used.",
+    "completedWithoutHelp": true,
+    "taskCompleted": true,
+    "usefulnessRating": 4,
+    "actualTotalMinutes": 43,
+    "correctionCount": 1,
+    "complaintResolved": true,
+    "approvedCorrectionUseful": true,
+    "criticalDefect": "none",
+    "criticalDefectResolved": true,
+    "freeInstitutionalSubstituteAdequate": false
+  },
+  "purchaseEvidence": {
+    "preferredFormat": "ongoing_revision_subscription",
+    "preferredPayer": "professional_development",
+    "tooCheapMonthly": 5,
+    "reasonableMonthly": 20,
+    "expensiveButPossibleMonthly": 35,
+    "tooExpensiveMonthly": 60,
+    "commitment": "paid_pilot_when_available",
+    "commitmentEvidence": "Synthetic example only; this is not customer evidence and must never be counted as a real pilot."
+  },
+  "researchNotes": "Synthetic validation fixture. Do not include this record in a real cohort decision."
+}

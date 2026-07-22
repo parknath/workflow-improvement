@@ -6,6 +6,19 @@ Prepared: 2026-07-18
 
 Status: Ready for one uncoached, low-risk professor pilot
 
+## Evidence files and automated decision gate
+
+Copy `professor-pilot-record.template.json` into the ignored `validation/private-records/` directory for each participant. Use a code rather than a name, keep `containsPersonalData` set to `false`, and do not commit completed records. The JSON Schema keeps every record structurally comparable; the evaluator excludes the synthetic example and reports missing evidence rather than converting an incomplete interview into a result.
+
+Validate one or more completed records and view the precommitted cohort gates:
+
+```bash
+pnpm pilots:check -- validation/private-records/PILOT-001.json
+pnpm pilots:check -- validation/private-records/PILOT-001.json validation/private-records/PILOT-002.json validation/private-records/PILOT-003.json validation/private-records/PILOT-004.json validation/private-records/PILOT-005.json
+```
+
+The evaluator keeps second-run usefulness, recurring-format preference, payer preference, and a payment-oriented commitment separate. It does not count the supplied synthetic example as customer evidence and does not apply a cohort decision before five complete real records exist.
+
 ## Decision this pilot must support
 
 Determine whether Workflow Lab can help an individual university professor redesign one real assignment for current AI conditions, run the resulting workflow without operator help, convert a genuine miss into an acceptable human-approved correction, and show enough recurring value to justify discussing a subscription.

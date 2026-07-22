@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0",
+  "participantCode": "PILOT-001",
+  "discipline": "Not recorded",
+  "courseLevel": "Not recorded",
+  "assignmentAndTrigger": "Not recorded; replace with the real assignment and recurring trigger.",
+  "institutionalPolicySource": "Not recorded",
+  "painfulJobConfirmed": false,
+  "dataBoundaryConfirmed": false,
+  "containsPersonalData": false,
+  "session1": {
+    "completedOn": null,
+    "intakeCompletedWithoutHelp": null,
+    "packageGenerated": null,
+    "usefulnessRating": null,
+    "actualTotalMinutes": null,
+    "operatorHelpPoints": [],
+    "genuineComplaint": null,
+    "correctionDecision": "not_completed",
+    "correctionReason": null,
+    "criticalDefect": "none",
+    "criticalDefectResolved": true
+  },
+  "session2": null,
+  "purchaseEvidence": {
+    "preferredFormat": "not_asked",
+    "preferredPayer": "not_asked",
+    "tooCheapMonthly": null,
+    "reasonableMonthly": null,
+    "expensiveButPossibleMonthly": null,
+    "tooExpensiveMonthly": null,
+    "commitment": "not_asked",
+    "commitmentEvidence": null
+  },
+  "researchNotes": "Store completed records only under validation/private-records/ or another private access-controlled location. Use a participant code; do not include names, student work, grades, accommodations, or restricted data."
+}

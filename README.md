@@ -80,6 +80,8 @@ pnpm verify
 
 `pnpm verify` runs tests, strict type checking, the production build, both package generators, JSON Schema checks, generated-package audits, and seven-route HTTP smoke checks. The same gate runs on every push and pull request through GitHub Actions.
 
+The professor pilot protocol now includes a privacy-minimized JSON record, schema, and cohort evaluator. Copy `validation/professor-pilot-record.template.json` into the ignored `validation/private-records/` directory, then run `pnpm pilots:check -- <record.json>`. Synthetic fixtures are excluded automatically, incomplete evidence is reported, and the keep/change/pause decision is withheld until five complete real pilot records exist.
+
 ## Architecture
 
 - `src/data/fixtures.ts`: realistic ready-made workflow inputs and workflow-library cards.

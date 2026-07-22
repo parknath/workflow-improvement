@@ -1,6 +1,6 @@
 # Implementation status
 
-Last updated: 2026-07-20
+Last updated: 2026-07-22
 
 ## Current state
 
@@ -29,6 +29,7 @@ The first public static prototype is available at https://parknath.github.io/wor
 - Human-review, privacy, safety, failure/escalation, and measurement controls.
 - Product, scope, technical, website, engine, and run documentation.
 - A professor assignment-redesign pilot protocol with uncoached task instructions, safety boundaries, two-run evidence capture, separate willingness-to-pay questions, and precommitted continue/change/kill rules.
+- A privacy-minimized professor-pilot JSON record, Draft 2020-12 schema, ignored private-record location, completeness checker, and five-pilot cohort evaluator that keeps usefulness, recurring-format preference, payer, and payment-oriented commitment separate. Synthetic examples cannot count as evidence.
 - A schema-valid assignment-redesign pilot fixture that exercises the generic professor path before a live pilot.
 - Generic professor workflow assets for approved-tool/data-boundary preflight, accountable academic decisions, and second-run evidence capture.
 - Correct separation between reviewable `AI_ASSIST` drafting and `HUMAN_ONLY` academic decisions; mandatory human review remains explicit for assisted steps.

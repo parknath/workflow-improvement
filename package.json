@@ -13,8 +13,10 @@
     "generate": "tsx src/engine/cli.ts",
     "schema:check": "node scripts/verify-schema.mjs",
     "packages:audit": "node scripts/audit-generated-packages.mjs",
+    "pilots:check": "tsx src/validation/professorPilotCli.ts",
+    "pilots:self-check": "tsx src/validation/professorPilotCli.ts validation/professor-pilot-record.example.json",
     "routes:check": "node scripts/smoke-routes.mjs",
-    "verify": "pnpm test && pnpm typecheck && pnpm build && pnpm generate && pnpm generate -- --student && pnpm schema:check && pnpm packages:audit && pnpm routes:check"
+    "verify": "pnpm test && pnpm typecheck && pnpm build && pnpm generate && pnpm generate -- --student && pnpm schema:check && pnpm packages:audit && pnpm pilots:self-check && pnpm routes:check"
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
