@@ -4,7 +4,7 @@ Last updated: 2026-07-22
 
 ## Current state
 
-The first public static prototype is available at https://parknath.github.io/workflow-improvement/. A server-capable owner-beta Gmail-to-action preset is implemented and locally validated but is not live until its Google web OAuth client, server-side OpenAI credentials, and server deployment are configured.
+The public prototype remains available at https://parknath.github.io/workflow-improvement/. The server-capable owner beta is live at https://workflow-improvement.vercel.app/inbox-automation with Google web OAuth, a protected OpenAI classifier, reviewed Google Sheets writes, and reviewed Google Calendar event creation. The owner beta is an integration test surface, not evidence that accounts, billing, durable storage, or customer readiness exist.
 
 ## Completed implementation
 
@@ -14,7 +14,7 @@ The first public static prototype is available at https://parknath.github.io/wor
 - Ready-made professor assignment-redesign and course-material organization workflows with complete safe inputs, outputs, review boundaries, and package generation.
 - Student weekly-planning redesign with 10 executable steps and required reusable assets.
 - JSON plus nine-file Markdown package renderer and CLI.
-- Six-route responsive website with homepage, method, library, demo, six-step intake, and complete sample result.
+- Seven-route responsive website with homepage, method, library, demo, six-step intake, complete sample result, and inbox automation.
 - A preset-first homepage with three common professor improvements, a short ready-made summary, one-click package generation, optional customization, saved-draft continuation, and a detailed six-step intake only for workflows the defaults do not cover.
 - Browser-only intake persistence, step editing/reordering/removal, validation, and JSON download.
 - End-to-end local intake-to-package generation with complete redesigned steps, reusable assets, measurement guidance, package download, and an explicit no-server/no-provider disclosure.
@@ -42,7 +42,7 @@ The first public static prototype is available at https://parknath.github.io/wor
 
 ## Verification record
 
-- Owner-beta inbox follow-up: `pnpm verify` passed 49 tests, strict type checking, production build, both package generators, three schemas, both package audits, all seven HTTP routes, and the expanded ChatGPT/review/write bundle contract. A real provider call remains blocked by absent Google web OAuth and OpenAI deployment credentials.
+- Owner-beta deployment: `pnpm verify` passed 55 tests, strict type checking, the production build, both package generators, schema and package audits, and all seven routes. Vercel production commit `b60ee3a` is Ready; the canonical homepage and `/inbox-automation` return HTTP 200, Google Identity Services reaches `Ready to authorize`, and an unauthenticated POST to `/api/classify` returns the expected HTTP 401 access-key rejection rather than 404.
 - `pnpm test`: passed 34 tests covering the prior engine, intake, revision, and routing contracts plus asset-to-step mapping, run start/complete/skip/back behavior, browser persistence and corrupt-state recovery, problem recording, comparable-run measurement, previous-version preservation and retrieval, baseline promotion without added retention, revision-to-next-run version provenance, two-run deltas, and server-rendered overview/run/measurement/comparison/revision states.
 - `pnpm run typecheck`: passed with TypeScript strict mode.
 - `pnpm run build`: passed; Vite produced the production bundle.
@@ -69,8 +69,8 @@ The first public static prototype is available at https://parknath.github.io/wor
 
 - No production backend or durable cross-device storage.
 - No durable server or cross-device history. The current browser retains one active workflow, one immediately previous approved version, the current run, pending revision, and one prior comparable run summary; clearing site data removes them.
-- Guided package generation and correction drafting remain deterministic. The inbox preset has real external ChatGPT classification code but cannot run live without the deployment credentials described in `.env.example`.
-- No authentication, integrations, analytics, or collaboration.
+- Guided package generation and correction drafting remain deterministic. The live inbox preset uses external ChatGPT classification only after explicit disclosure and owner-beta access-key entry.
+- No professor accounts, subscription billing, product analytics, durable cross-device history, or collaboration. Google is the only live connector; Slack remains unavailable.
 - Public routes use static per-route entry files; client navigation remains History API based.
 - There is no GUI browser end-to-end suite. Pure run behavior, persisted-state contracts, server-rendered critical UI states, production bundle contracts, and all routes are automated; final interaction still needs observation with a real user.
 - Usability and time-saving claims still require testing with real professors and students.
