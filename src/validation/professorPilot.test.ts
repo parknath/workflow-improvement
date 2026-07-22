@@ -98,4 +98,16 @@ describe("professor pilot evidence gate", () => {
     });
     expect(assessPilotCompleteness(negative)).toMatchObject({ complete: true, missing: [] });
   });
+
+  it("preserves the gate percentages when more than five complete records are evaluated", () => {
+    const passing = [1, 2, 3, 4].map((index) => record(`PILOT-P${index}`));
+    const weak = [5, 6, 7, 8, 9, 10].map((index) => record(`PILOT-W${index}`, {
+      session1: { ...record("BASE").session1, intakeCompletedWithoutHelp: false },
+      session2: { ...record("BASE").session2!, usefulnessRating: 3 },
+      purchaseEvidence: { ...record("BASE").purchaseEvidence, preferredFormat: "one_time_package", commitment: "another_unpaid_test" },
+    }));
+    const result = evaluateProfessorPilotCohort([...passing, ...weak]);
+    expect(result.gates.find((item) => item.label === "Uncoached intake and package generation")).toMatchObject({ actual: 4, required: 8, passed: false });
+    expect(result.recommendation).not.toBe("continue_subscription_thesis");
+  });
 });

@@ -96,12 +96,14 @@ export function evaluateProfessorPilotCohort(records: ProfessorPilotRecord[]): C
   const realRecords = records.filter((record) => !record.participantCode.startsWith("SYNTHETIC-"));
   const completeRecords = realRecords.filter((record) => assessPilotCompleteness(record).complete);
   const count = (predicate: (record: ProfessorPilotRecord) => boolean) => completeRecords.filter(predicate).length;
+  const decisionDenominator = Math.max(5, completeRecords.length);
+  const required = (share: number) => Math.ceil(decisionDenominator * share);
   const gates = [
-    gate("Uncoached intake and package generation", count((record) => record.session1.intakeCompletedWithoutHelp === true && record.session1.packageGenerated === true), 4),
-    gate("Second-run usefulness at least 4/5", count((record) => (record.session2?.usefulnessRating ?? 0) >= 4), 4),
-    gate("Useful approved correction on next run", count((record) => record.session1.correctionDecision === "approved" && record.session2?.complaintResolved === true && record.session2.approvedCorrectionUseful === true), 3),
-    gate("Ongoing revision preferred", count((record) => record.purchaseEvidence.preferredFormat === "ongoing_revision_subscription"), 3),
-    gate("Payment-oriented commitment", count((record) => paymentCommitments.has(record.purchaseEvidence.commitment)), 2),
+    gate("Uncoached intake and package generation", count((record) => record.session1.intakeCompletedWithoutHelp === true && record.session1.packageGenerated === true), required(0.8)),
+    gate("Second-run usefulness at least 4/5", count((record) => (record.session2?.usefulnessRating ?? 0) >= 4), required(0.8)),
+    gate("Useful approved correction on next run", count((record) => record.session1.correctionDecision === "approved" && record.session2?.complaintResolved === true && record.session2.approvedCorrectionUseful === true), required(0.6)),
+    gate("Ongoing revision preferred", count((record) => record.purchaseEvidence.preferredFormat === "ongoing_revision_subscription"), required(0.6)),
+    gate("Payment-oriented commitment", count((record) => paymentCommitments.has(record.purchaseEvidence.commitment)), required(0.4)),
   ];
   const unresolvedCritical = count((record) =>
     (record.session1.criticalDefect !== "none" && !record.session1.criticalDefectResolved)
@@ -137,11 +139,11 @@ export function evaluateProfessorPilotCohort(records: ProfessorPilotRecord[]): C
 
   const pauseReasons = [
     unresolvedCritical > 0 ? `${unresolvedCritical} complete pilot record(s) contain a privacy or academic-control defect.` : "",
-    painfulJobs < 3 ? `Only ${painfulJobs} of ${completeRecords.length} professors confirmed a current painful job.` : "",
-    secondRunsWithoutHelp < 3 ? `Only ${secondRunsWithoutHelp} of ${completeRecords.length} completed a second run without help.` : "",
-    usefulSecondRuns < 3 ? `Only ${usefulSecondRuns} of ${completeRecords.length} rated the second run at least 4/5.` : "",
+    painfulJobs < required(0.6) ? `Only ${painfulJobs} of ${completeRecords.length} professors confirmed a current painful job.` : "",
+    secondRunsWithoutHelp < required(0.6) ? `Only ${secondRunsWithoutHelp} of ${completeRecords.length} completed a second run without help.` : "",
+    usefulSecondRuns < required(0.6) ? `Only ${usefulSecondRuns} of ${completeRecords.length} rated the second run at least 4/5.` : "",
     commitments === 0 ? "No professor made a payment-oriented commitment." : "",
-    adequateFreeSubstitutes >= 3 ? `${adequateFreeSubstitutes} of ${completeRecords.length} said a free institutional substitute adequately solves the job.` : "",
+    adequateFreeSubstitutes >= required(0.6) ? `${adequateFreeSubstitutes} of ${completeRecords.length} said a free institutional substitute adequately solves the job.` : "",
   ].filter(Boolean);
 
   if (pauseReasons.length > 0) {

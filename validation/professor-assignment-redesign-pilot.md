@@ -17,7 +17,7 @@ pnpm pilots:check -- validation/private-records/PILOT-001.json
 pnpm pilots:check -- validation/private-records/PILOT-001.json validation/private-records/PILOT-002.json validation/private-records/PILOT-003.json validation/private-records/PILOT-004.json validation/private-records/PILOT-005.json
 ```
 
-The evaluator keeps second-run usefulness, recurring-format preference, payer preference, and a payment-oriented commitment separate. It does not count the supplied synthetic example as customer evidence and does not apply a cohort decision before five complete real records exist.
+The evaluator keeps second-run usefulness, recurring-format preference, payer preference, and a payment-oriented commitment separate. It does not count the supplied synthetic example as customer evidence and does not apply a cohort decision before five complete real records exist. If more than five complete records are evaluated together, the 4/5, 3/5, and 2/5 gates retain their 80%, 60%, and 40% thresholds rather than becoming easier as the cohort grows.
 
 ## Decision this pilot must support
 
