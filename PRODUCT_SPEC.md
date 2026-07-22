@@ -30,6 +30,9 @@ The engine produces a current map, baseline, diagnosis, priorities, executable r
 
 ## Product principles
 
+- Default to a ready-made result, not a configuration task. A professor should choose a recurring job, confirm the minimum context, and get something usable without mapping steps, writing prompts, choosing models, or tuning automation settings.
+- Present one meaningful decision at a time. Keep detailed customization, integration options, and advanced controls optional and progressively disclosed.
+- Treat setup work as a cost to the customer. Track time to first usable result, required inputs, help requests, and abandonment; do not add a control unless it removes more work or risk than it creates.
 - Use the user's existing tools where practical.
 - Standardize before automating.
 - Keep accountable academic judgment with people.

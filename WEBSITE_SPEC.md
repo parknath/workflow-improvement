@@ -2,7 +2,7 @@
 
 ## Direction
 
-The experience should feel calm and immediately usable: generous whitespace, system typography, neutral surfaces, one blue action color, clear choices, and restrained motion. The first screen is the product selection experience, not a marketing explanation. It avoids robot imagery, excessive gradients, automation-at-all-costs language, chat-first interaction, and dense dashboards.
+The experience should feel calm and immediately usable: generous whitespace, system typography, neutral surfaces, one blue action color, clear choices, and restrained motion. The first screen is the product selection experience, not a marketing explanation. The primary path asks for one meaningful decision at a time and produces a useful preset result without prompt writing, manual workflow mapping, model selection, or advanced settings. Detailed controls remain optional. It avoids robot imagery, excessive gradients, automation-at-all-costs language, chat-first interaction, and dense dashboards.
 
 ## Routes
 
