@@ -78,10 +78,15 @@ export default async function handler(request: ApiRequest, response: ApiResponse
   const expectedKey = process.env.AUTOMATION_ACCESS_KEY ?? "";
   if (!expectedKey) return response.status(503).json({ error: "The automation access gate is not configured." });
   if (!secureMatch(header(request, "x-workflow-lab-key"), expectedKey)) return response.status(401).json({ error: "The Workflow Lab access key is incorrect." });
+  if (!/^application\/json(?:;|$)/i.test(header(request, "content-type"))) return response.status(415).json({ error: "Use application/json." });
+  let serializedBody = "";
+  try { serializedBody = typeof request.body === "string" ? request.body : JSON.stringify(request.body ?? null); }
+  catch { return response.status(400).json({ error: "Send valid JSON." }); }
+  if (Buffer.byteLength(serializedBody, "utf8") > 64 * 1024) return response.status(413).json({ error: "The classification request is too large." });
   if (!process.env.OPENAI_API_KEY) return response.status(503).json({ error: "OpenAI classification is not configured." });
   let body: Record<string, unknown> | undefined;
   try {
-    body = typeof request.body === "string" ? JSON.parse(request.body) as Record<string, unknown> : request.body as Record<string, unknown> | undefined;
+    body = typeof request.body === "string" ? JSON.parse(serializedBody) as Record<string, unknown> : request.body as Record<string, unknown> | undefined;
   } catch {
     return response.status(400).json({ error: "Send valid JSON." });
   }

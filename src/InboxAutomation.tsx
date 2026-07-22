@@ -28,10 +28,9 @@ interface AutomationSettings extends SyncConfiguration {
 }
 
 const configKey = "workflow-lab-action-inbox-config";
-const accessKeySessionKey = "workflow-lab-automation-access-key";
 const defaultSettings: AutomationSettings = {
-  gmailQuery: "in:inbox newer_than:14d",
-  maxMessages: 20,
+  gmailQuery: "label:workflow-lab-test newer_than:30d",
+  maxMessages: 5,
   spreadsheetId: "",
   sheetName: "Workflow Lab Inbox",
   calendarId: "primary",
@@ -41,14 +40,10 @@ function readSettings(): AutomationSettings {
   try { return { ...defaultSettings, ...JSON.parse(localStorage.getItem(configKey) ?? "{}") }; } catch { return defaultSettings; }
 }
 
-function readAccessKey(): string {
-  try { return sessionStorage.getItem(accessKeySessionKey) ?? ""; } catch { return ""; }
-}
-
 export function InboxAutomation() {
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID?.trim() ?? "";
   const [settings, setSettings] = useState<AutomationSettings>(readSettings);
-  const [accessKey, setAccessKey] = useState(readAccessKey);
+  const [accessKey, setAccessKey] = useState("");
   const [gisReady, setGisReady] = useState(() => typeof window !== "undefined" && Boolean(window.google?.accounts.oauth2));
   const [accessToken, setAccessToken] = useState("");
   const [consent, setConsent] = useState(false);
@@ -115,7 +110,7 @@ export function InboxAutomation() {
 
   const disconnectGoogle = () => {
     if (accessToken && window.google?.accounts.oauth2) window.google.accounts.oauth2.revoke(accessToken, () => undefined);
-    setAccessToken(""); setCandidates([]); setModel(""); setNotice("Google access revoked for this session."); setError("");
+    setAccessToken(""); setAccessKey(""); setConsent(false); setCandidates([]); setModel(""); setNotice("Google access revoked and the local access key cleared."); setError("");
   };
 
   const scanAndClassify = async () => {
@@ -125,7 +120,6 @@ export function InboxAutomation() {
     if (!consent) { setError("Confirm that the listed email metadata may be sent to OpenAI for classification."); return; }
     try {
       setBusy("scan");
-      try { sessionStorage.setItem(accessKeySessionKey, accessKey); } catch { /* Keep the key in memory. */ }
       const messages = await scanGmail(accessToken, settings.gmailQuery, settings.maxMessages);
       if (!messages.length) { setCandidates([]); setNotice("No Gmail messages matched this search."); return; }
       const classified = await classifyGmailCandidates("", accessKey, messages);
@@ -170,12 +164,12 @@ export function InboxAutomation() {
       <section className="automation-step">
         <div className="automation-step-title"><span>02</span><div><h2>Choose the inbox and destinations</h2><p>Use a Gmail search query, an existing spreadsheet, and the calendar that should receive approved events.</p></div></div>
         <div className="automation-form-grid">
-          <label className="field"><span>Gmail search</span><input value={settings.gmailQuery} onChange={(event) => updateSetting("gmailQuery", event.target.value)} placeholder="in:inbox newer_than:14d"/><small>ChatGPT classifies the matches; this query only limits what is read.</small></label>
+          <label className="field"><span>Gmail search</span><input value={settings.gmailQuery} onChange={(event) => updateSetting("gmailQuery", event.target.value)} placeholder="label:workflow-lab-test newer_than:30d"/><small>For the first test, create the Gmail label “workflow-lab-test” and apply it only to non-sensitive messages. Every match is sent for classification.</small></label>
           <label className="field"><span>Maximum messages</span><input type="number" min="1" max="50" value={settings.maxMessages} onChange={(event) => updateSetting("maxMessages", Math.min(50, Math.max(1, Number(event.target.value))))}/></label>
           <label className="field"><span>Google Sheet URL or ID</span><input value={settings.spreadsheetId} onChange={(event) => updateSetting("spreadsheetId", event.target.value)} placeholder="https://docs.google.com/spreadsheets/d/…"/></label>
           <label className="field"><span>Sheet tab</span><input value={settings.sheetName} onChange={(event) => updateSetting("sheetName", event.target.value)} placeholder="Workflow Lab Inbox"/></label>
           <label className="field"><span>Calendar ID</span><input value={settings.calendarId} onChange={(event) => updateSetting("calendarId", event.target.value)} placeholder="primary"/><small>Use “primary” for your main Google Calendar.</small></label>
-          <label className="field"><span>Workflow Lab access key</span><input type="password" autoComplete="off" value={accessKey} onChange={(event) => setAccessKey(event.target.value)} placeholder="Server-side access gate"/><small>Kept only for this browser session; this protects OpenAI usage.</small></label>
+          <label className="field"><span>Workflow Lab access key</span><input type="password" autoComplete="off" value={accessKey} onChange={(event) => setAccessKey(event.target.value)} placeholder="Server-side access gate"/><small>Kept only in page memory and cleared on disconnect or refresh; this protects OpenAI usage.</small></label>
         </div>
         <label className="consent-check"><input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)}/><span>I approve sending each matched email’s sender, subject, timestamp, and short snippet to OpenAI for classification. No full body or attachment is sent.</span></label>
         <button className="button primary" disabled={!accessToken || busy === "scan"} onClick={scanAndClassify}>{busy === "scan" ? <LoaderCircle className="spin"/> : <Sparkles/>} Scan and classify with ChatGPT</button>

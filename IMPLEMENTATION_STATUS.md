@@ -39,10 +39,11 @@ The public prototype remains available at https://parknath.github.io/workflow-im
 - A real owner-beta “Inbox to action list” preset that reads bounded Gmail metadata, uses ChatGPT structured output instead of rule-based classification, requires review, then performs selected idempotent Google Sheets and Calendar writes.
 - A regression fix for custom list fields that preserves raw editing text, including spaces inside multi-word values, while separately maintaining normalized comma/newline-delimited arrays.
 - A protected stateless classifier endpoint and a Vercel deployment shape that keep the OpenAI key and Slack-style client secrets out of the browser.
+- Preliminary owner-beta hardening: no committed credentials or known production dependency advisories, CSP and anti-framing/browser-capability headers, non-cacheable classifier responses, JSON and 64 KiB request gates, page-memory-only access key handling, and a five-message labeled-inbox default.
 
 ## Verification record
 
-- Owner-beta deployment: `pnpm verify` passed 55 tests, strict type checking, the production build, both package generators, schema and package audits, and all seven routes. Vercel production commit `b60ee3a` is Ready; the canonical homepage and `/inbox-automation` return HTTP 200, Google Identity Services reaches `Ready to authorize`, and an unauthenticated POST to `/api/classify` returns the expected HTTP 401 access-key rejection rather than 404.
+- Owner-beta security follow-up: `pnpm verify` passed 58 tests, strict type checking, the production build, both package generators, schema and package audits, and all seven routes. `pnpm audit --prod` found no known vulnerabilities; repository and history scans found no committed provider keys, private keys, credential files, or token files. The deployed security headers and Google OAuth behavior require separate live verification after release.
 - `pnpm test`: passed 34 tests covering the prior engine, intake, revision, and routing contracts plus asset-to-step mapping, run start/complete/skip/back behavior, browser persistence and corrupt-state recovery, problem recording, comparable-run measurement, previous-version preservation and retrieval, baseline promotion without added retention, revision-to-next-run version provenance, two-run deltas, and server-rendered overview/run/measurement/comparison/revision states.
 - `pnpm run typecheck`: passed with TypeScript strict mode.
 - `pnpm run build`: passed; Vite produced the production bundle.

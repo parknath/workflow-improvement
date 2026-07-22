@@ -39,8 +39,19 @@ describe("protected ChatGPT classifier endpoint", () => {
     process.env.AUTOMATION_ACCESS_KEY = "test-access";
     process.env.OPENAI_API_KEY = "test-openai";
     const { result, response } = responseRecorder();
-    await handler({ method: "POST", headers: { "x-workflow-lab-key": "test-access" }, body: "{" }, response);
+    await handler({ method: "POST", headers: { "content-type": "application/json", "x-workflow-lab-key": "test-access" }, body: "{" }, response);
     expect(result).toEqual({ status: 400, payload: { error: "Send valid JSON." } });
+  });
+
+  it("requires JSON and rejects oversized requests before contacting OpenAI", async () => {
+    process.env.AUTOMATION_ACCESS_KEY = "test-access";
+    process.env.OPENAI_API_KEY = "test-openai";
+    const missingType = responseRecorder();
+    await handler({ method: "POST", headers: { "x-workflow-lab-key": "test-access" }, body: {} }, missingType.response);
+    expect(missingType.result).toEqual({ status: 415, payload: { error: "Use application/json." } });
+    const oversized = responseRecorder();
+    await handler({ method: "POST", headers: { "content-type": "application/json", "x-workflow-lab-key": "test-access" }, body: { messages: [{ snippet: "x".repeat(65 * 1024) }] } }, oversized.response);
+    expect(oversized.result).toEqual({ status: 413, payload: { error: "The classification request is too large." } });
   });
 
   it("rejects duplicate message identifiers before contacting OpenAI", async () => {
@@ -48,7 +59,7 @@ describe("protected ChatGPT classifier endpoint", () => {
     process.env.OPENAI_API_KEY = "test-openai";
     const duplicate = { sourceId: "same", sender: "a@example.edu", subject: "Subject", receivedAt: "2026-07-20T00:00:00Z", snippet: "Snippet" };
     const { result, response } = responseRecorder();
-    await handler({ method: "POST", headers: { "x-workflow-lab-key": "test-access" }, body: { messages: [duplicate, duplicate] } }, response);
+    await handler({ method: "POST", headers: { "content-type": "application/json", "x-workflow-lab-key": "test-access" }, body: { messages: [duplicate, duplicate] } }, response);
     expect(result).toEqual({ status: 400, payload: { error: "Every message sourceId must be unique." } });
   });
 });
