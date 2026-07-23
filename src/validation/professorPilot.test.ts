@@ -4,6 +4,11 @@ import { assessPilotCompleteness, evaluateProfessorPilotCohort, type ProfessorPi
 function record(participantCode: string, overrides: Partial<ProfessorPilotRecord> = {}): ProfessorPilotRecord {
   return {
     participantCode,
+    disciplineCategory: "arts_humanities",
+    courseLevel: "upper_undergraduate",
+    assignmentType: "writing_research",
+    workflowFrequency: "multiple_per_term",
+    policyStatus: "guidance_only",
     painfulJobConfirmed: true,
     dataBoundaryConfirmed: true,
     containsPersonalData: false,
@@ -31,8 +36,13 @@ function record(participantCode: string, overrides: Partial<ProfessorPilotRecord
       freeInstitutionalSubstituteAdequate: false,
     },
     purchaseEvidence: {
+      fallbackIfUnavailable: "general_ai_institutional",
+      currentPersonalSpendMonthly: 0,
       preferredFormat: "ongoing_revision_subscription",
       preferredPayer: "professional_development",
+      fundingPathChecked: true,
+      availableFundingPath: "professional_development",
+      fundingPathEvidence: "The participant confirmed an available professional-development reimbursement path.",
       tooCheapMonthly: 5,
       reasonableMonthly: 20,
       expensiveButPossibleMonthly: 35,
@@ -56,13 +66,20 @@ describe("professor pilot evidence gate", () => {
     const result = evaluateProfessorPilotCohort(records);
     expect(result.recommendation).toBe("continue_subscription_thesis");
     expect(result.gates.every((item) => item.passed)).toBe(true);
+    expect(result.coverageWarnings).toContain("All complete pilots are in arts_humanities; do not generalize across disciplines.");
+    expect(result.coverageWarnings).toContain("No complete pilot verified an available personal-card payment path; payer preference alone is not payment access.");
   });
 
   it("does not treat usefulness as payment evidence", () => {
     const records = [1, 2, 3, 4, 5].map((index) => record(`PILOT-00${index}`, {
       purchaseEvidence: {
+        fallbackIfUnavailable: "general_ai_institutional",
+        currentPersonalSpendMonthly: 0,
         preferredFormat: "ongoing_revision_subscription",
         preferredPayer: "professional_development",
+        fundingPathChecked: true,
+        availableFundingPath: "professional_development",
+        fundingPathEvidence: "The participant confirmed an available professional-development reimbursement path.",
         tooCheapMonthly: 5,
         reasonableMonthly: 20,
         expensiveButPossibleMonthly: 35,
@@ -109,5 +126,62 @@ describe("professor pilot evidence gate", () => {
     const result = evaluateProfessorPilotCohort([...passing, ...weak]);
     expect(result.gates.find((item) => item.label === "Uncoached intake and package generation")).toMatchObject({ actual: 4, required: 8, passed: false });
     expect(result.recommendation).not.toBe("continue_subscription_thesis");
+  });
+
+  it("requires actual substitute, spend, and funding-path evidence", () => {
+    const incomplete = record("PILOT-FUND", {
+      purchaseEvidence: {
+        ...record("BASE").purchaseEvidence,
+        fallbackIfUnavailable: "not_asked",
+        currentPersonalSpendMonthly: null,
+        fundingPathChecked: false,
+        availableFundingPath: "not_checked",
+        fundingPathEvidence: null,
+      },
+    });
+    expect(assessPilotCompleteness(incomplete).missing).toEqual(expect.arrayContaining([
+      "ask what the professor would use if Workflow Lab were unavailable",
+      "record current personal monthly spend, including zero",
+      "check an actual available payer or reimbursement path",
+      "record evidence for the available funding path",
+    ]));
+  });
+
+  it("rejects placeholder context values from cohort coverage", () => {
+    const incomplete = record("PILOT-CONTEXT", {
+      disciplineCategory: "not_recorded",
+      courseLevel: "not_recorded",
+      assignmentType: "not_recorded",
+      workflowFrequency: "not_recorded",
+      policyStatus: "not_recorded",
+    });
+    expect(assessPilotCompleteness(incomplete).missing).toEqual(expect.arrayContaining([
+      "record the broad discipline category",
+      "record the course level",
+      "record the assignment type",
+      "record the workflow frequency",
+      "record the institutional policy status",
+    ]));
+    expect(evaluateProfessorPilotCohort([incomplete]).coverage.every((item) => item.values.length === 0)).toBe(true);
+  });
+
+  it("reports decision-relevant cohort coverage without changing the precommitted gates", () => {
+    const records = [
+      record("PILOT-001", { disciplineCategory: "arts_humanities", assignmentType: "writing_research", workflowFrequency: "weekly" }),
+      record("PILOT-002", { disciplineCategory: "business", assignmentType: "project_case", workflowFrequency: "biweekly" }),
+      record("PILOT-003", { disciplineCategory: "education", assignmentType: "discussion_presentation", workflowFrequency: "monthly" }),
+      record("PILOT-004", { disciplineCategory: "engineering_computing", assignmentType: "problem_set_coding", workflowFrequency: "multiple_per_term" }),
+      record("PILOT-005", {
+        disciplineCategory: "social_sciences",
+        assignmentType: "writing_research",
+        workflowFrequency: "event_driven",
+        purchaseEvidence: { ...record("BASE").purchaseEvidence, availableFundingPath: "personal_card", fundingPathEvidence: "The participant confirmed a personal-card path is available." },
+      }),
+    ];
+    const result = evaluateProfessorPilotCohort(records);
+    expect(result.coverage.find((item) => item.label === "Discipline")?.values).toHaveLength(5);
+    expect(result.coverage.find((item) => item.label === "Assignment type")?.values[0]).toEqual({ value: "writing_research", count: 2 });
+    expect(result.coverageWarnings).toEqual([]);
+    expect(result.recommendation).toBe("continue_subscription_thesis");
   });
 });

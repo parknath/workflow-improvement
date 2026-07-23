@@ -28,4 +28,9 @@ for (const record of records) {
 const cohort = evaluateProfessorPilotCohort(records);
 console.log(`Cohort: ${cohort.recommendation} (${cohort.completePilotCount} complete real pilots; ${cohort.excludedSyntheticCount} synthetic excluded)`);
 for (const item of cohort.gates) console.log(`  - ${item.label}: ${item.actual}/${item.required} ${item.passed ? "PASS" : "OPEN"}`);
+for (const item of cohort.coverage) {
+  const values = item.values.length === 0 ? "none" : item.values.map((value) => `${value.value}=${value.count}`).join(", ");
+  console.log(`  - Coverage — ${item.label}: ${values}`);
+}
+for (const warning of cohort.coverageWarnings) console.log(`  - Coverage warning: ${warning}`);
 for (const reason of cohort.reasons) console.log(`  - ${reason}`);

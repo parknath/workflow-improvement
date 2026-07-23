@@ -1,8 +1,10 @@
 # Professor assignment-redesign pilot kit
 
-Version: 1.0
+Version: 1.1
 
 Prepared: 2026-07-18
+
+Updated: 2026-07-23
 
 Status: Ready for one uncoached, low-risk professor pilot
 
@@ -17,7 +19,9 @@ pnpm pilots:check -- validation/private-records/PILOT-001.json
 pnpm pilots:check -- validation/private-records/PILOT-001.json validation/private-records/PILOT-002.json validation/private-records/PILOT-003.json validation/private-records/PILOT-004.json validation/private-records/PILOT-005.json
 ```
 
-The evaluator keeps second-run usefulness, recurring-format preference, payer preference, and a payment-oriented commitment separate. It does not count the supplied synthetic example as customer evidence and does not apply a cohort decision before five complete real records exist. If more than five complete records are evaluated together, the 4/5, 3/5, and 2/5 gates retain their 80%, 60%, and 40% thresholds rather than becoming easier as the cohort grows.
+The evaluator keeps second-run usefulness, recurring-format preference, payer preference, an actually available funding path, and a payment-oriented commitment separate. It does not count the supplied synthetic example as customer evidence and does not apply a cohort decision before five complete real records exist. If more than five complete records are evaluated together, the 4/5, 3/5, and 2/5 gates retain their 80%, 60%, and 40% thresholds rather than becoming easier as the cohort grows.
+
+Version 1.1 also reports privacy-safe cohort coverage for discipline, course level, assignment type, workflow frequency, policy status, and available funding path. Coverage warnings do not rewrite the precommitted outcome gates after results are known; they prevent a concentrated cohort from being presented as broad demand.
 
 ## Decision this pilot must support
 
@@ -39,6 +43,10 @@ Research basis:
 - [EDUCAUSE: Listening to skepticism](https://er.educause.edu/articles/2026/4/listening-to-skepticism-what-faculty-concerns-about-generative-ai-reveal)
 - [Professor discussion: AI-resistant teaching without more workload](https://www.reddit.com/r/Professors/comments/1t3m42u/ai_resistant_teaching_that_doesnt_increase_your/)
 - [Professor discussion: department-specific LLM guidance](https://www.reddit.com/r/Professors/comments/1uudc1k/inspirationbest_practice_needed_llm_guidelines/)
+- [Berkeley: task- and discipline-specific faculty AI policies](https://cshe.berkeley.edu/news/new-study-31000-college-syllabi-shows-faculty-warming-ai-classroom)
+- [University of Florida: approved tools, human review, and assignment guidance](https://ai.ufl.edu/guidelines/)
+- [Penn State: faculty AI microgrants can fund software subscriptions](https://www.psu.edu/news/faculty-and-staff/story/ai-center-excellence-launches-instructional-innovation-grant-programs)
+- [UBC: faculty professional-development funds can cover teaching software](https://hr.ubc.ca/career-development/professional-development-funding/faculty-professional-development-funding)
 - [TeachingsByDesign pricing](https://www.teachingsbydesign.com/)
 
 ## Participant fit
@@ -52,6 +60,25 @@ Recruit one professor who:
 - can test without sharing student work, identifiable student data, confidential research, or restricted materials.
 
 Exclude a participant when the test would require real grading, an academic-integrity allegation, student surveillance, an AI detector, protected data, or a decision the professor is not authorized to make.
+
+## Recruitment and payer-path screen
+
+Do not contact anyone automatically. Start with one reachable professor who fits the criteria above, then use the following invitation without promising savings, learning outcomes, compensation, a discount, or a finished commercial product:
+
+> I am testing Workflow Lab, an early tool that helps a university professor turn one recurring academic process into a step-by-step AI-assisted workflow with explicit review. I am looking for a professor who needs to revise a real assignment in the next 30 days and can test the same workflow twice, 7–14 days apart. The pilot uses no student work or identifiable/restricted data. Session 1 takes about 45–60 minutes and Session 2 about 30–45 minutes. The purpose is candid product research, including what fails and whether a one-time package, subscription, institutional access, or no product is the right answer.
+
+Before scheduling, confirm all of the following without asking the candidate to send assignment materials:
+
+1. They own or may change the assignment.
+2. The assignment has a real upcoming trigger, not a hypothetical future use.
+3. A comparable second use is possible within 7–14 days.
+4. An institutional, department, or course AI policy can be consulted, or its absence can be documented.
+5. The pilot can remain free of student submissions, names, grades, accommodations, confidential research, and restricted data.
+6. They will discuss their current substitute, current personal spend including zero, preferred payer, and a concrete next commitment.
+
+Schedule both sessions before Session 1 when possible. Record the broad, schema-defined discipline, course, assignment, recurrence, and policy categories rather than an institution or individual name. A participant recruited through an AI grant, faculty fellowship, or teaching center is useful for testing a funded payer path but is an enriched sample; do not generalize their adoption behavior to ordinary professors.
+
+After the unaided willingness-to-pay questions, check one actual funding path. Ask whether a personal card, professional-development reimbursement, department, teaching center, grant, or student-shared model is currently available and what approval or reimbursement step would be required. Record `none` when no path exists and `unknown` only after a reasonable check. Preference without an available path is not payment evidence.
 
 ## Hypotheses and disconfirming evidence
 
@@ -174,6 +201,7 @@ Only after the unaided answers, show the market anchors: focused one-time resour
 | Field | Session 1 | Session 2 |
 | --- | --- | --- |
 | Participant code / discipline / course level |  |  |
+| Assignment type / workflow frequency / policy status |  |  |
 | Assignment and trigger |  |  |
 | Institutional policy source |  |  |
 | Baseline source and minutes |  |  |
@@ -190,6 +218,8 @@ Only after the unaided answers, show the market anchors: focused one-time resour
 | Complaint resolved on next run | N/A |  |
 | Repeatable without help (yes/no) |  |  |
 | Preferred purchase format |  |  |
+| Fallback if unavailable / current personal monthly spend |  |  |
+| Available funding path and evidence |  |  |
 | Unaided monthly price thresholds |  |  |
 | Concrete next commitment |  |  |
 | Verbatim evidence worth preserving |  |  |
@@ -199,6 +229,8 @@ Save participant evidence under a private, access-controlled location outside th
 ## Precommitted decision rules
 
 One pilot can expose defects and weaken assumptions; it cannot validate a market. Use the following rules after five comparable professor pilots:
+
+Review the evaluator's cohort-coverage output alongside these gates. A concentrated sample may support a narrow segment decision but cannot validate broad professor demand. Do not change these precommitted thresholds after seeing the outcomes.
 
 ### Continue the subscription thesis
 

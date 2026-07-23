@@ -2,6 +2,11 @@ export type CriticalDefect = "none" | "privacy" | "academic_control";
 
 export interface ProfessorPilotRecord {
   participantCode: string;
+  disciplineCategory: "arts_humanities" | "business" | "education" | "engineering_computing" | "health_sciences" | "natural_sciences" | "social_sciences" | "interdisciplinary_other" | "not_recorded";
+  courseLevel: "lower_undergraduate" | "upper_undergraduate" | "graduate" | "professional" | "mixed" | "not_recorded";
+  assignmentType: "writing_research" | "problem_set_coding" | "project_case" | "lab_clinical" | "discussion_presentation" | "other" | "not_recorded";
+  workflowFrequency: "weekly" | "biweekly" | "monthly" | "multiple_per_term" | "once_per_term" | "event_driven" | "not_recorded";
+  policyStatus: "approved_tool_available" | "guidance_only" | "unclear_or_missing" | "tested_use_prohibited" | "not_recorded";
   painfulJobConfirmed: boolean;
   dataBoundaryConfirmed: boolean;
   containsPersonalData: false;
@@ -29,8 +34,13 @@ export interface ProfessorPilotRecord {
     freeInstitutionalSubstituteAdequate: boolean;
   };
   purchaseEvidence: {
+    fallbackIfUnavailable: "manual_process" | "general_ai_personal" | "general_ai_institutional" | "teaching_center_or_colleague" | "specialist_tool" | "none" | "other" | "not_asked";
+    currentPersonalSpendMonthly: number | null;
     preferredFormat: "ongoing_revision_subscription" | "one_time_package" | "institution_provided" | "none" | "undecided" | "not_asked";
     preferredPayer: "personal_card" | "professional_development" | "department" | "teaching_center" | "student_shared" | "none" | "undecided" | "not_asked";
+    fundingPathChecked: boolean;
+    availableFundingPath: "personal_card" | "professional_development" | "department" | "teaching_center" | "grant" | "student_shared" | "none" | "unknown" | "not_checked";
+    fundingPathEvidence: string | null;
     tooCheapMonthly: number | null;
     reasonableMonthly: number | null;
     expensiveButPossibleMonthly: number | null;
@@ -53,12 +63,19 @@ export interface CohortGate {
   passed: boolean;
 }
 
+export interface PilotCoverage {
+  label: string;
+  values: Array<{ value: string; count: number }>;
+}
+
 export interface CohortDecision {
   recommendation: "collect_more" | "continue_subscription_thesis" | "change_or_narrow" | "pause_or_kill";
   realPilotCount: number;
   excludedSyntheticCount: number;
   completePilotCount: number;
   gates: CohortGate[];
+  coverage: PilotCoverage[];
+  coverageWarnings: string[];
   reasons: string[];
 }
 
@@ -67,6 +84,11 @@ const paymentCommitments = new Set(["paid_pilot_when_available", "introduce_buye
 export function assessPilotCompleteness(record: ProfessorPilotRecord): PilotCompleteness {
   const missing: string[] = [];
   if (record.participantCode.startsWith("SYNTHETIC-")) missing.push("replace the synthetic fixture with a real coded participant");
+  if (record.disciplineCategory === "not_recorded") missing.push("record the broad discipline category");
+  if (record.courseLevel === "not_recorded") missing.push("record the course level");
+  if (record.assignmentType === "not_recorded") missing.push("record the assignment type");
+  if (record.workflowFrequency === "not_recorded") missing.push("record the workflow frequency");
+  if (record.policyStatus === "not_recorded") missing.push("record the institutional policy status");
   if (!record.dataBoundaryConfirmed) missing.push("confirm the privacy/data boundary");
   if (!record.session1.completedOn) missing.push("complete session 1");
   if (record.session1.intakeCompletedWithoutHelp === null) missing.push("record uncoached intake completion");
@@ -77,8 +99,12 @@ export function assessPilotCompleteness(record: ProfessorPilotRecord): PilotComp
   if (record.session1.genuineComplaint && record.session1.correctionDecision === "no_draft") missing.push("record the decision on the genuine complaint");
   if (!record.session1.correctionReason) missing.push("record why the correction was approved, rejected, or unsafe");
   if (!record.session2) missing.push("complete session 2");
+  if (record.purchaseEvidence.fallbackIfUnavailable === "not_asked") missing.push("ask what the professor would use if Workflow Lab were unavailable");
+  if (record.purchaseEvidence.currentPersonalSpendMonthly === null) missing.push("record current personal monthly spend, including zero");
   if (record.purchaseEvidence.preferredFormat === "not_asked") missing.push("ask the preferred purchase format");
   if (record.purchaseEvidence.preferredPayer === "not_asked") missing.push("ask the preferred payer");
+  if (!record.purchaseEvidence.fundingPathChecked || record.purchaseEvidence.availableFundingPath === "not_checked") missing.push("check an actual available payer or reimbursement path");
+  if (!record.purchaseEvidence.fundingPathEvidence) missing.push("record evidence for the available funding path");
   const prices = [record.purchaseEvidence.tooCheapMonthly, record.purchaseEvidence.reasonableMonthly, record.purchaseEvidence.expensiveButPossibleMonthly, record.purchaseEvidence.tooExpensiveMonthly];
   if (prices.some((price) => price === null)) missing.push("record all four unaided monthly price thresholds");
   if (prices.every((price) => price !== null) && !(prices[0]! <= prices[1]! && prices[1]! <= prices[2]! && prices[2]! <= prices[3]!)) missing.push("record monthly price thresholds in ascending order");
@@ -89,6 +115,17 @@ export function assessPilotCompleteness(record: ProfessorPilotRecord): PilotComp
 
 function gate(label: string, actual: number, required: number): CohortGate {
   return { label, actual, required, passed: actual >= required };
+}
+
+function coverage(label: string, values: string[]): PilotCoverage {
+  const counts = new Map<string, number>();
+  for (const value of values) counts.set(value, (counts.get(value) ?? 0) + 1);
+  return {
+    label,
+    values: [...counts.entries()]
+      .map(([value, count]) => ({ value, count }))
+      .sort((left, right) => right.count - left.count || left.value.localeCompare(right.value)),
+  };
 }
 
 export function evaluateProfessorPilotCohort(records: ProfessorPilotRecord[]): CohortDecision {
@@ -105,6 +142,21 @@ export function evaluateProfessorPilotCohort(records: ProfessorPilotRecord[]): C
     gate("Ongoing revision preferred", count((record) => record.purchaseEvidence.preferredFormat === "ongoing_revision_subscription"), required(0.6)),
     gate("Payment-oriented commitment", count((record) => paymentCommitments.has(record.purchaseEvidence.commitment)), required(0.4)),
   ];
+  const cohortCoverage = [
+    coverage("Discipline", completeRecords.map((record) => record.disciplineCategory)),
+    coverage("Course level", completeRecords.map((record) => record.courseLevel)),
+    coverage("Assignment type", completeRecords.map((record) => record.assignmentType)),
+    coverage("Workflow frequency", completeRecords.map((record) => record.workflowFrequency)),
+    coverage("Policy status", completeRecords.map((record) => record.policyStatus)),
+    coverage("Available funding path", completeRecords.map((record) => record.purchaseEvidence.availableFundingPath)),
+  ];
+  const recurringFrequencies = new Set(["weekly", "biweekly", "monthly", "multiple_per_term"]);
+  const coverageWarnings = completeRecords.length < 5 ? [] : [
+    cohortCoverage[0].values.length === 1 ? `All complete pilots are in ${cohortCoverage[0].values[0].value}; do not generalize across disciplines.` : "",
+    cohortCoverage[2].values.length === 1 ? `All complete pilots use ${cohortCoverage[2].values[0].value} assignments; do not generalize across assignment types.` : "",
+    !completeRecords.some((record) => recurringFrequencies.has(record.workflowFrequency)) ? "No complete pilot covers a workflow recurring more than once per term; subscription retention remains untested." : "",
+    !completeRecords.some((record) => record.purchaseEvidence.availableFundingPath === "personal_card") ? "No complete pilot verified an available personal-card payment path; payer preference alone is not payment access." : "",
+  ].filter(Boolean);
   const unresolvedCritical = count((record) =>
     (record.session1.criticalDefect !== "none" && !record.session1.criticalDefectResolved)
     || (record.session2 !== null && record.session2.criticalDefect !== "none" && !record.session2.criticalDefectResolved),
@@ -122,6 +174,8 @@ export function evaluateProfessorPilotCohort(records: ProfessorPilotRecord[]): C
       excludedSyntheticCount,
       completePilotCount: completeRecords.length,
       gates,
+      coverage: cohortCoverage,
+      coverageWarnings,
       reasons: [`Collect ${5 - completeRecords.length} more complete real pilot record${5 - completeRecords.length === 1 ? "" : "s"} before applying the cohort decision rules.`],
     };
   }
@@ -133,6 +187,8 @@ export function evaluateProfessorPilotCohort(records: ProfessorPilotRecord[]): C
       excludedSyntheticCount,
       completePilotCount: completeRecords.length,
       gates,
+      coverage: cohortCoverage,
+      coverageWarnings,
       reasons: ["All precommitted continue gates passed and no privacy or academic-control defect remains."],
     };
   }
@@ -153,6 +209,8 @@ export function evaluateProfessorPilotCohort(records: ProfessorPilotRecord[]): C
       excludedSyntheticCount,
       completePilotCount: completeRecords.length,
       gates,
+      coverage: cohortCoverage,
+      coverageWarnings,
       reasons: pauseReasons,
     };
   }
@@ -163,6 +221,8 @@ export function evaluateProfessorPilotCohort(records: ProfessorPilotRecord[]): C
     excludedSyntheticCount,
     completePilotCount: completeRecords.length,
     gates,
+    coverage: cohortCoverage,
+    coverageWarnings,
     reasons: ["The evidence avoids the pause thresholds but does not clear every continue gate; narrow the workflow, buyer, payer, or recurring offer before building more scope."],
   };
 }

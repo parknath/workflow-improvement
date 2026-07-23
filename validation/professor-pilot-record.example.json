@@ -1,8 +1,11 @@
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "1.1",
   "participantCode": "SYNTHETIC-001",
-  "discipline": "History (synthetic example)",
-  "courseLevel": "Undergraduate (synthetic example)",
+  "disciplineCategory": "arts_humanities",
+  "courseLevel": "upper_undergraduate",
+  "assignmentType": "writing_research",
+  "workflowFrequency": "multiple_per_term",
+  "policyStatus": "guidance_only",
   "assignmentAndTrigger": "Synthetic example: revise a source-analysis assignment before its next scheduled course run.",
   "institutionalPolicySource": "Synthetic example policy reference",
   "painfulJobConfirmed": true,
@@ -36,8 +39,13 @@
     "freeInstitutionalSubstituteAdequate": false
   },
   "purchaseEvidence": {
+    "fallbackIfUnavailable": "general_ai_institutional",
+    "currentPersonalSpendMonthly": 0,
     "preferredFormat": "ongoing_revision_subscription",
     "preferredPayer": "professional_development",
+    "fundingPathChecked": true,
+    "availableFundingPath": "professional_development",
+    "fundingPathEvidence": "Synthetic example: a faculty professional-development reimbursement path was confirmed.",
     "tooCheapMonthly": 5,
     "reasonableMonthly": 20,
     "expensiveButPossibleMonthly": 35,
