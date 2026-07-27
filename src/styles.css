@@ -467,6 +467,15 @@ p { color: var(--muted); line-height: 1.7; }
 .automation-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 .connection-ok { display: inline-flex; align-items: center; gap: 7px; color: var(--green); font-weight: 700; }
 .connection-ok svg { width: 18px; }
+.automation-default-summary { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 22px; padding: 16px; border-radius: 14px; background: var(--green-2); }
+.automation-default-summary > svg { width: 20px; flex: 0 0 auto; color: var(--green); }
+.automation-default-summary p { margin: 3px 0 0; font-size: .9rem; }
+.automation-default-summary code { overflow-wrap: anywhere; }
+.automation-essential-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 14px; }
+.automation-customize-toggle { display: inline-flex; align-items: center; gap: 7px; margin: 0 0 18px; padding: 7px 0; border: 0; color: var(--green); background: none; font: inherit; font-weight: 750; cursor: pointer; }
+.automation-customize-toggle svg { width: 18px; transition: transform .18s ease; }
+.automation-customize-toggle svg.open { transform: rotate(180deg); }
+.automation-advanced-settings { padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: #fbfbfc; }
 .automation-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 22px; }
 .consent-check { display: flex; align-items: flex-start; gap: 10px; max-width: 840px; margin: 8px 0 22px; color: var(--muted); line-height: 1.5; }
 .consent-check input { margin-top: 4px; }
@@ -605,6 +614,7 @@ footer small { grid-column: 1 / -1; color: var(--muted); }
   .automation-hero h1 { font-size: clamp(3rem, 14vw, 4.4rem); }
   .connector-grid { grid-template-columns: 1fr; }
   .automation-step { padding: 22px 16px; border-radius: 20px; }
+  .automation-essential-fields { grid-template-columns: 1fr; }
   .review-toolbar, .apply-bar { align-items: flex-start; flex-direction: column; }
   .apply-bar .button { width: 100%; }
   .candidate-actions { display: grid; }

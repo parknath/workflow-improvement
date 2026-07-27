@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, CalendarDays, Check, ExternalLink, Inbox, LoaderCircle, LogOut, Mail, RefreshCw, ShieldCheck, Sparkles, Table2 } from "lucide-react";
+import { AlertTriangle, CalendarDays, Check, ChevronDown, ExternalLink, Inbox, LoaderCircle, LogOut, Mail, RefreshCw, ShieldCheck, Sparkles, Table2 } from "lucide-react";
 import { applyClassifications, classifyGmailCandidates } from "./emailClassification";
 import { GOOGLE_AUTOMATION_SCOPES, scanGmail, syncGmailActions, type GmailActionCandidate, type SyncConfiguration } from "./googleAutomation";
 
@@ -47,6 +47,7 @@ export function InboxAutomation() {
   const [gisReady, setGisReady] = useState(() => typeof window !== "undefined" && Boolean(window.google?.accounts.oauth2));
   const [accessToken, setAccessToken] = useState("");
   const [consent, setConsent] = useState(false);
+  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
   const [candidates, setCandidates] = useState<GmailActionCandidate[]>([]);
   const [showIgnored, setShowIgnored] = useState(false);
   const [busy, setBusy] = useState<"" | "connect" | "scan" | "sync">("");
@@ -162,15 +163,28 @@ export function InboxAutomation() {
       </section>
 
       <section className="automation-step">
-        <div className="automation-step-title"><span>02</span><div><h2>Choose the inbox and destinations</h2><p>Use a Gmail search query, an existing spreadsheet, and the calendar that should receive approved events.</p></div></div>
-        <div className="automation-form-grid">
-          <label className="field"><span>Gmail search</span><input value={settings.gmailQuery} onChange={(event) => updateSetting("gmailQuery", event.target.value)} placeholder="label:workflow-lab-test newer_than:30d"/><small>For the first test, create the Gmail label “workflow-lab-test” and apply it only to non-sensitive messages. Every match is sent for classification.</small></label>
-          <label className="field"><span>Maximum messages</span><input type="number" min="1" max="50" value={settings.maxMessages} onChange={(event) => updateSetting("maxMessages", Math.min(50, Math.max(1, Number(event.target.value))))}/></label>
-          <label className="field"><span>Google Sheet URL or ID</span><input value={settings.spreadsheetId} onChange={(event) => updateSetting("spreadsheetId", event.target.value)} placeholder="https://docs.google.com/spreadsheets/d/…"/></label>
-          <label className="field"><span>Sheet tab</span><input value={settings.sheetName} onChange={(event) => updateSetting("sheetName", event.target.value)} placeholder="Workflow Lab Inbox"/></label>
-          <label className="field"><span>Calendar ID</span><input value={settings.calendarId} onChange={(event) => updateSetting("calendarId", event.target.value)} placeholder="primary"/><small>Use “primary” for your main Google Calendar.</small></label>
-          <label className="field"><span>Workflow Lab access key</span><input type="password" autoComplete="off" value={accessKey} onChange={(event) => setAccessKey(event.target.value)} placeholder="Server-side access gate"/><small>Kept only in page memory and cleared on disconnect or refresh; this protects OpenAI usage.</small></label>
+        <div className="automation-step-title"><span>02</span><div><h2>Choose where approved tasks go</h2><p>Create a blank Google Sheet and paste its link. The safe inbox and calendar defaults are already set.</p></div></div>
+        <div className="automation-default-summary">
+          <Check/>
+          <div>
+            <b>Ready for a small first test</b>
+            <p>Workflow Lab will scan up to 5 emails labeled <code>workflow-lab-test</code>, add approved tasks to a “Workflow Lab Inbox” tab, and put approved dated events on your main calendar.</p>
+          </div>
         </div>
+        <div className="automation-essential-fields">
+          <label className="field"><span>Paste your Google Sheet link</span><input value={settings.spreadsheetId} onChange={(event) => updateSetting("spreadsheetId", event.target.value)} placeholder="https://docs.google.com/spreadsheets/d/…"/><small>In Google Sheets, create a blank spreadsheet, copy its browser link, and paste it here. Workflow Lab creates the “Workflow Lab Inbox” tab for you.</small></label>
+          <label className="field"><span>Owner access key</span><input type="password" autoComplete="off" value={accessKey} onChange={(event) => setAccessKey(event.target.value)} placeholder="Enter the private Workflow Lab key"/><small>This is the private key configured for this owner beta—not your Google password. It clears when you disconnect or refresh.</small></label>
+        </div>
+        <button className="automation-customize-toggle" type="button" aria-expanded={showAdvancedSettings} onClick={() => setShowAdvancedSettings((current) => !current)}>
+          <ChevronDown className={showAdvancedSettings ? "open" : ""}/>
+          {showAdvancedSettings ? "Hide custom settings" : "Customize scan and destinations"}
+        </button>
+        {showAdvancedSettings && <div className="automation-form-grid automation-advanced-settings">
+          <label className="field"><span>Emails to scan</span><input value={settings.gmailQuery} onChange={(event) => updateSetting("gmailQuery", event.target.value)} placeholder="label:workflow-lab-test newer_than:30d"/><small>Gmail search syntax. For the first test, label only a few non-sensitive messages “workflow-lab-test.”</small></label>
+          <label className="field"><span>Maximum emails</span><input type="number" min="1" max="50" value={settings.maxMessages} onChange={(event) => updateSetting("maxMessages", Math.min(50, Math.max(1, Number(event.target.value))))}/></label>
+          <label className="field"><span>Sheet tab name</span><input value={settings.sheetName} onChange={(event) => updateSetting("sheetName", event.target.value)} placeholder="Workflow Lab Inbox"/></label>
+          <label className="field"><span>Calendar</span><input value={settings.calendarId} onChange={(event) => updateSetting("calendarId", event.target.value)} placeholder="primary"/><small>“primary” means your main Google Calendar.</small></label>
+        </div>}
         <label className="consent-check"><input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)}/><span>I approve sending each matched email’s sender, subject, timestamp, and short snippet to OpenAI for classification. No full body or attachment is sent.</span></label>
         <button className="button primary" disabled={!accessToken || busy === "scan"} onClick={scanAndClassify}>{busy === "scan" ? <LoaderCircle className="spin"/> : <Sparkles/>} Scan and classify with ChatGPT</button>
       </section>

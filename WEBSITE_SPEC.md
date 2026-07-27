@@ -12,6 +12,7 @@ The experience should feel calm and immediately usable: generous whitespace, sys
 - `/demo`: role/workflow selector with fixture-generated baseline, bottlenecks, priorities, redesign, estimate, and review points.
 - `/intake`: short ready-made workflow confirmation, action-first generated result, browser-local guided workflow run, contextual reusable assets, comparable-run measurement and evidence export, human-approved revision, active/previous version handling, plus an optional six-step detailed intake and JSON downloads.
 - `/sample-result`: complete professor result across overview, diagnosis, redesigned workflow, assets, and measurement.
+- `/inbox-automation`: an owner-beta Gmail-to-reviewed-actions workflow. The default setup shows only the unavoidable Sheet destination and private owner key, states the safe five-message labeled-inbox behavior in plain language, and progressively discloses query, scan-limit, tab, and calendar customization.
 
 ## Accessibility and responsiveness
 
