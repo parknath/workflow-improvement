@@ -28,16 +28,20 @@ interface AutomationSettings extends SyncConfiguration {
 }
 
 const configKey = "workflow-lab-action-inbox-config";
+const legacyLabeledInboxQuery = "label:workflow-lab-test newer_than:30d";
 const defaultSettings: AutomationSettings = {
-  gmailQuery: "label:workflow-lab-test newer_than:30d",
+  gmailQuery: "in:inbox newer_than:30d",
   maxMessages: 5,
   spreadsheetId: "",
   sheetName: "Workflow Lab Inbox",
   calendarId: "primary",
 };
 
-function readSettings(): AutomationSettings {
-  try { return { ...defaultSettings, ...JSON.parse(localStorage.getItem(configKey) ?? "{}") }; } catch { return defaultSettings; }
+export function readSettings(): AutomationSettings {
+  try {
+    const stored = JSON.parse(localStorage.getItem(configKey) ?? "{}") as Partial<AutomationSettings>;
+    return { ...defaultSettings, ...stored, gmailQuery: stored.gmailQuery === legacyLabeledInboxQuery ? defaultSettings.gmailQuery : stored.gmailQuery ?? defaultSettings.gmailQuery };
+  } catch { return defaultSettings; }
 }
 
 export function InboxAutomation() {
@@ -138,7 +142,8 @@ export function InboxAutomation() {
     try {
       setBusy("sync");
       const result = await syncGmailActions(accessToken, settings, candidates);
-      setNotice(`Applied ${result.sheetRowsAdded} Sheet row${result.sheetRowsAdded === 1 ? "" : "s"} and ${result.calendarEventsAdded} Calendar event${result.calendarEventsAdded === 1 ? "" : "s"}; skipped ${result.duplicatesSkipped} duplicate${result.duplicatesSkipped === 1 ? "" : "s"}.`);
+      if (result.spreadsheetId && result.spreadsheetId !== settings.spreadsheetId) updateSetting("spreadsheetId", result.spreadsheetId);
+      setNotice(`${result.spreadsheetCreated ? "Created your Workflow Lab Actions spreadsheet. " : ""}Applied ${result.sheetRowsAdded} Sheet row${result.sheetRowsAdded === 1 ? "" : "s"} and ${result.calendarEventsAdded} Calendar event${result.calendarEventsAdded === 1 ? "" : "s"}; skipped ${result.duplicatesSkipped} duplicate${result.duplicatesSkipped === 1 ? "" : "s"}.`);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "The selected actions could not be applied.");
     } finally { setBusy(""); }
@@ -163,16 +168,16 @@ export function InboxAutomation() {
       </section>
 
       <section className="automation-step">
-        <div className="automation-step-title"><span>02</span><div><h2>Choose where approved tasks go</h2><p>Create a blank Google Sheet and paste its link. The safe inbox and calendar defaults are already set.</p></div></div>
+        <div className="automation-step-title"><span>02</span><div><h2>Choose how many emails to scan</h2><p>Start small. Workflow Lab will scan the newest messages in your inbox and stop at your limit.</p></div></div>
         <div className="automation-default-summary">
           <Check/>
           <div>
-            <b>Ready for a small first test</b>
-            <p>Workflow Lab will scan up to 5 emails labeled <code>workflow-lab-test</code>, add approved tasks to a “Workflow Lab Inbox” tab, and put approved dated events on your main calendar.</p>
+            <b>No labels or destination setup</b>
+            <p>After review, approved tasks go to a Workflow Lab spreadsheet created automatically. Approved dated events go to your main calendar.</p>
           </div>
         </div>
         <div className="automation-essential-fields">
-          <label className="field"><span>Paste your Google Sheet link</span><input value={settings.spreadsheetId} onChange={(event) => updateSetting("spreadsheetId", event.target.value)} placeholder="https://docs.google.com/spreadsheets/d/…"/><small>In Google Sheets, create a blank spreadsheet, copy its browser link, and paste it here. Workflow Lab creates the “Workflow Lab Inbox” tab for you.</small></label>
+          <label className="field"><span>Emails to scan</span><input type="number" min="1" max="50" value={settings.maxMessages} onChange={(event) => updateSetting("maxMessages", Math.min(50, Math.max(1, Number(event.target.value))))}/><small>Choose 1–50. Only sender, subject, timestamp, and a short snippet are reviewed.</small></label>
           <label className="field"><span>Owner access key</span><input type="password" autoComplete="off" value={accessKey} onChange={(event) => setAccessKey(event.target.value)} placeholder="Enter the private Workflow Lab key"/><small>This is the private key configured for this owner beta—not your Google password. It clears when you disconnect or refresh.</small></label>
         </div>
         <button className="automation-customize-toggle" type="button" aria-expanded={showAdvancedSettings} onClick={() => setShowAdvancedSettings((current) => !current)}>
@@ -180,8 +185,8 @@ export function InboxAutomation() {
           {showAdvancedSettings ? "Hide custom settings" : "Customize scan and destinations"}
         </button>
         {showAdvancedSettings && <div className="automation-form-grid automation-advanced-settings">
-          <label className="field"><span>Emails to scan</span><input value={settings.gmailQuery} onChange={(event) => updateSetting("gmailQuery", event.target.value)} placeholder="label:workflow-lab-test newer_than:30d"/><small>Gmail search syntax. For the first test, label only a few non-sensitive messages “workflow-lab-test.”</small></label>
-          <label className="field"><span>Maximum emails</span><input type="number" min="1" max="50" value={settings.maxMessages} onChange={(event) => updateSetting("maxMessages", Math.min(50, Math.max(1, Number(event.target.value))))}/></label>
+          <label className="field"><span>Which emails</span><input value={settings.gmailQuery} onChange={(event) => updateSetting("gmailQuery", event.target.value)} placeholder="in:inbox newer_than:30d"/><small>Optional Gmail search syntax. Leave the default to scan recent inbox messages.</small></label>
+          <label className="field"><span>Existing Sheet (optional)</span><input value={settings.spreadsheetId} onChange={(event) => updateSetting("spreadsheetId", event.target.value)} placeholder="Google Sheet URL or ID"/><small>Leave blank and Workflow Lab creates a spreadsheet after you approve actions.</small></label>
           <label className="field"><span>Sheet tab name</span><input value={settings.sheetName} onChange={(event) => updateSetting("sheetName", event.target.value)} placeholder="Workflow Lab Inbox"/></label>
           <label className="field"><span>Calendar</span><input value={settings.calendarId} onChange={(event) => updateSetting("calendarId", event.target.value)} placeholder="primary"/><small>“primary” means your main Google Calendar.</small></label>
         </div>}
@@ -202,7 +207,7 @@ export function InboxAutomation() {
           <div className="candidate-actions"><label><input type="checkbox" checked={candidate.addToSheet} onChange={(event) => updateCandidate(candidate.id, { addToSheet: event.target.checked })}/><Table2/> Add to Sheet</label><label><input type="checkbox" checked={candidate.addToCalendar} onChange={(event) => updateCandidate(candidate.id, { addToCalendar: event.target.checked })}/><CalendarDays/> Add Calendar event and reminders</label></div>
           <details><summary>Source snippet and suggested action</summary><p>{candidate.snippet}</p><p><b>Suggested:</b> {candidate.suggestedAction}</p><p><b>Confidence:</b> {Math.round(candidate.confidence * 100)}%</p></details>
         </article>)}</div>
-        <div className="apply-bar"><div><b>{selectedSheet} Sheet rows · {selectedCalendar} Calendar events</b><p>Duplicates are skipped by immutable Gmail message ID. Calendar writes require a reviewed date.</p></div><button className="button primary" disabled={busy === "sync" || (!selectedSheet && !selectedCalendar) || (selectedSheet > 0 && !settings.spreadsheetId.trim())} onClick={applySelected}>{busy === "sync" ? <LoaderCircle className="spin"/> : <RefreshCw/>} Apply selected actions</button></div>
+        <div className="apply-bar"><div><b>{selectedSheet} Sheet rows · {selectedCalendar} Calendar events</b><p>Workflow Lab creates a Sheet automatically if needed. Duplicates are skipped; Calendar writes require a reviewed date.</p></div><button className="button primary" disabled={busy === "sync" || (!selectedSheet && !selectedCalendar)} onClick={applySelected}>{busy === "sync" ? <LoaderCircle className="spin"/> : <RefreshCw/>} Apply selected actions</button></div>
       </section>}
     </section>
   </main>;

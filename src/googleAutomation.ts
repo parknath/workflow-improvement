@@ -54,6 +54,8 @@ export interface SyncResult {
   sheetRowsAdded: number;
   calendarEventsAdded: number;
   duplicatesSkipped: number;
+  spreadsheetId: string;
+  spreadsheetCreated: boolean;
 }
 
 type FetchLike = typeof fetch;
@@ -69,6 +71,7 @@ interface GmailMessageResponse {
 
 interface SheetMetadata { sheets?: Array<{ properties?: { title?: string } }> }
 interface SheetValues { values?: unknown[][] }
+interface CreatedSpreadsheet { spreadsheetId?: string }
 
 export class GoogleAutomationError extends Error {
   constructor(message: string, public readonly status: number) { super(message); }
@@ -168,6 +171,18 @@ async function prepareSheet(accessToken: string, spreadsheetId: string, sheetNam
   return complete;
 }
 
+async function createActionSpreadsheet(accessToken: string, sheetName: string, fetcher: FetchLike): Promise<string> {
+  const created = await googleJson<CreatedSpreadsheet>("https://sheets.googleapis.com/v4/spreadsheets", accessToken, {
+    method: "POST",
+    body: JSON.stringify({
+      properties: { title: "Workflow Lab Actions" },
+      sheets: [{ properties: { title: sheetName } }],
+    }),
+  }, fetcher);
+  if (!created.spreadsheetId) throw new Error("Google created the action spreadsheet without returning its ID.");
+  return created.spreadsheetId;
+}
+
 async function existingMessageIds(accessToken: string, spreadsheetId: string, sheetName: string, headers: string[], fetcher: FetchLike): Promise<Set<string>> {
   const index = headers.indexOf("Source Message ID");
   if (index < 0) return new Set();
@@ -228,13 +243,17 @@ const rowFor = (candidate: GmailActionCandidate, headers: string[], eventId: str
 
 export async function syncGmailActions(accessToken: string, configuration: SyncConfiguration, candidates: GmailActionCandidate[], fetcher: FetchLike = fetch): Promise<SyncResult> {
   const selected = candidates.filter((candidate) => candidate.addToSheet || candidate.addToCalendar);
-  if (!selected.length) return { sheetRowsAdded: 0, calendarEventsAdded: 0, duplicatesSkipped: 0 };
+  if (!selected.length) return { sheetRowsAdded: 0, calendarEventsAdded: 0, duplicatesSkipped: 0, spreadsheetId: extractSpreadsheetId(configuration.spreadsheetId), spreadsheetCreated: false };
   if (selected.some((candidate) => !candidate.taskTitle.trim())) throw new Error("Every selected action needs a reviewed title.");
   if (selected.some((candidate) => candidate.addToCalendar && !candidate.dueDate)) throw new Error("Every selected Calendar event needs a reviewed date.");
   const needsSheet = selected.some((candidate) => candidate.addToSheet);
-  const spreadsheetId = extractSpreadsheetId(configuration.spreadsheetId);
-  if (needsSheet && !spreadsheetId) throw new Error("Enter a Google Sheet URL or spreadsheet ID for the selected Sheet rows.");
   const sheetName = configuration.sheetName.trim() || "Workflow Lab Inbox";
+  let spreadsheetId = extractSpreadsheetId(configuration.spreadsheetId);
+  let spreadsheetCreated = false;
+  if (needsSheet && !spreadsheetId) {
+    spreadsheetId = await createActionSpreadsheet(accessToken, sheetName, fetcher);
+    spreadsheetCreated = true;
+  }
   const headers = needsSheet ? await prepareSheet(accessToken, spreadsheetId, sheetName, fetcher) : [];
   const existing = needsSheet ? await existingMessageIds(accessToken, spreadsheetId, sheetName, headers, fetcher) : new Set<string>();
   const syncedAt = new Date().toISOString();
@@ -255,5 +274,5 @@ export async function syncGmailActions(accessToken: string, configuration: SyncC
       body: JSON.stringify({ range: `${quotedSheet(sheetName)}!A:${columnName(headers.length)}`, majorDimension: "ROWS", values: rows }),
     }, fetcher);
   }
-  return { sheetRowsAdded: rows.length, calendarEventsAdded, duplicatesSkipped };
+  return { sheetRowsAdded: rows.length, calendarEventsAdded, duplicatesSkipped, spreadsheetId, spreadsheetCreated };
 }

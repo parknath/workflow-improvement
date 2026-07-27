@@ -24,7 +24,7 @@ Copy `.env.example` into the deployment environment and configure:
 - `AUTOMATION_ACCESS_KEY`: a server-only shared gate. The owner enters the matching value in the browser session before classification.
 - `OPENAI_MODEL`: optional model override; the default is `gpt-5.6-luna`.
 
-The Google token stays in React memory and is revoked on disconnect. Gmail access is read-only. Only sender, subject, received timestamp, and a snippet capped at 1,000 characters are sent to the protected ChatGPT endpoint; full bodies and attachments are not requested. Sheets and Calendar writes occur only after item-by-item review. Gmail message IDs deduplicate Sheet rows and deterministic Calendar event IDs make retries idempotent.
+The Google token stays in React memory and is revoked on disconnect. Gmail access is read-only. The user chooses an initial scan limit from 1–50; the default search covers recent inbox messages without requiring manual labels. Only sender, subject, received timestamp, and a snippet capped at 1,000 characters are sent to the protected ChatGPT endpoint; full bodies and attachments are not requested. Sheets and Calendar writes occur only after item-by-item review. If approved tasks need a Sheet and none is configured, Workflow Lab creates and remembers a `Workflow Lab Actions` spreadsheet at that moment. Gmail message IDs deduplicate Sheet rows and deterministic Calendar event IDs make retries idempotent.
 
 The included `vercel.json` provides a server-capable deployment shape for the Vite client plus `/api/classify`. GitHub Pages remains a static-hosted prototype and cannot run that API route. Slack is deliberately not claimed as connected: its OAuth code exchange requires a server-held client secret and a separate connector backend.
 

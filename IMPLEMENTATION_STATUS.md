@@ -38,10 +38,10 @@ The public prototype remains available at https://parknath.github.io/workflow-im
 - A single `pnpm verify` quality gate covering tests, type checking, build, package generation, JSON Schema validation, generated-package audits, and seven-route HTTP checks, mirrored in GitHub Actions for every push and pull request.
 - A GitHub Pages deployment workflow that reruns the full gate, creates a project-base artifact with static entries for all seven routes, and publishes through the protected `github-pages` environment.
 - A real owner-beta “Inbox to action list” preset that reads bounded Gmail metadata, uses ChatGPT structured output instead of rule-based classification, requires review, then performs selected idempotent Google Sheets and Calendar writes.
-- A default-first inbox setup that shows only the Sheet destination and owner access key, explains the preconfigured five-message labeled-inbox test, and keeps Gmail query, scan size, tab name, and calendar ID behind one optional customization control.
+- A no-label inbox setup that asks only for the initial scan count and owner access key, scans recent inbox messages by default, creates and remembers a Workflow Lab spreadsheet only after approved Sheet actions exist, and keeps query/destination customization optional.
 - A regression fix for custom list fields that preserves raw editing text, including spaces inside multi-word values, while separately maintaining normalized comma/newline-delimited arrays.
 - A protected stateless classifier endpoint and a Vercel deployment shape that keep the OpenAI key and Slack-style client secrets out of the browser.
-- Preliminary owner-beta hardening: no committed credentials or known production dependency advisories, CSP and anti-framing/browser-capability headers, non-cacheable classifier responses, JSON and 64 KiB request gates, page-memory-only access key handling, and a five-message labeled-inbox default.
+- Preliminary owner-beta hardening: no committed credentials or known production dependency advisories, CSP and anti-framing/browser-capability headers, non-cacheable classifier responses, JSON and 64 KiB request gates, page-memory-only access key handling, and an explicitly bounded recent-inbox scan.
 
 ## Verification record
 

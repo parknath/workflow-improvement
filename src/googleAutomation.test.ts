@@ -19,7 +19,7 @@ describe("Google inbox automation", () => {
   it("creates a reviewed calendar event without requiring a Sheet", async () => {
     const candidate = { ...gmailCandidate({ id: "abc123", threadId: "thread", snippet: "Meet July 24" }), relevant: true, itemType: "event" as const, taskTitle: "Faculty meeting", dueDate: "2026-07-24", addToCalendar: true };
     const fetcher = vi.fn(async (_url: string | URL | Request, _init?: RequestInit) => new Response(JSON.stringify({ id: "event" }), { status: 200 }));
-    await expect(syncGmailActions("token", { spreadsheetId: "", sheetName: "", calendarId: "primary" }, [candidate], fetcher as typeof fetch)).resolves.toEqual({ sheetRowsAdded: 0, calendarEventsAdded: 1, duplicatesSkipped: 0 });
+    await expect(syncGmailActions("token", { spreadsheetId: "", sheetName: "", calendarId: "primary" }, [candidate], fetcher as typeof fetch)).resolves.toEqual({ sheetRowsAdded: 0, calendarEventsAdded: 1, duplicatesSkipped: 0, spreadsheetId: "", spreadsheetCreated: false });
     const body = JSON.parse(String(fetcher.mock.calls[0][1]?.body));
     expect(body).toMatchObject({ summary: "Faculty meeting", visibility: "private", reminders: { useDefault: false } });
   });
@@ -27,7 +27,7 @@ describe("Google inbox automation", () => {
   it("treats an existing deterministic Calendar event as an idempotent retry", async () => {
     const candidate = { ...gmailCandidate({ id: "abc123", threadId: "thread" }), relevant: true, itemType: "event" as const, taskTitle: "Faculty meeting", dueDate: "2026-07-24", addToCalendar: true };
     const fetcher = vi.fn(async () => new Response(JSON.stringify({ error: { message: "Event already exists" } }), { status: 409 }));
-    await expect(syncGmailActions("token", { spreadsheetId: "", sheetName: "", calendarId: "primary" }, [candidate], fetcher as typeof fetch)).resolves.toEqual({ sheetRowsAdded: 0, calendarEventsAdded: 0, duplicatesSkipped: 1 });
+    await expect(syncGmailActions("token", { spreadsheetId: "", sheetName: "", calendarId: "primary" }, [candidate], fetcher as typeof fetch)).resolves.toEqual({ sheetRowsAdded: 0, calendarEventsAdded: 0, duplicatesSkipped: 1, spreadsheetId: "", spreadsheetCreated: false });
   });
 
   it("deduplicates Sheet writes by immutable Gmail message ID", async () => {
@@ -36,7 +36,28 @@ describe("Google inbox automation", () => {
       .mockResolvedValueOnce(new Response(JSON.stringify({ sheets: [{ properties: { title: "Workflow Lab Inbox" } }] }), { status: 200 }))
       .mockResolvedValueOnce(new Response(JSON.stringify({ values: [[...ACTION_SHEET_HEADERS]] }), { status: 200 }))
       .mockResolvedValueOnce(new Response(JSON.stringify({ values: [["existing-message"]] }), { status: 200 }));
-    await expect(syncGmailActions("token", { spreadsheetId: "sheet", sheetName: "Workflow Lab Inbox", calendarId: "primary" }, [candidate], fetcher as typeof fetch)).resolves.toEqual({ sheetRowsAdded: 0, calendarEventsAdded: 0, duplicatesSkipped: 1 });
+    await expect(syncGmailActions("token", { spreadsheetId: "sheet", sheetName: "Workflow Lab Inbox", calendarId: "primary" }, [candidate], fetcher as typeof fetch)).resolves.toEqual({ sheetRowsAdded: 0, calendarEventsAdded: 0, duplicatesSkipped: 1, spreadsheetId: "sheet", spreadsheetCreated: false });
     expect(fetcher).toHaveBeenCalledTimes(3);
+  });
+
+  it("creates and reuses an action spreadsheet when no destination was configured", async () => {
+    const candidate = { ...gmailCandidate({ id: "new-message", threadId: "thread" }), relevant: true, itemType: "task" as const, addToSheet: true };
+    const fetcher = vi.fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ spreadsheetId: "created-sheet" }), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ sheets: [{ properties: { title: "Workflow Lab Inbox" } }] }), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ values: [] }), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({}), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ values: [] }), { status: 200 }))
+      .mockResolvedValueOnce(new Response(JSON.stringify({ updates: { updatedRows: 1 } }), { status: 200 }));
+
+    await expect(syncGmailActions("token", { spreadsheetId: "", sheetName: "Workflow Lab Inbox", calendarId: "primary" }, [candidate], fetcher as typeof fetch)).resolves.toEqual({
+      sheetRowsAdded: 1,
+      calendarEventsAdded: 0,
+      duplicatesSkipped: 0,
+      spreadsheetId: "created-sheet",
+      spreadsheetCreated: true,
+    });
+    expect(String(fetcher.mock.calls[0][0])).toBe("https://sheets.googleapis.com/v4/spreadsheets");
+    expect(JSON.parse(String(fetcher.mock.calls[0][1]?.body))).toMatchObject({ properties: { title: "Workflow Lab Actions" } });
   });
 });
